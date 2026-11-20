@@ -1,5 +1,6 @@
 package com.example
 
+import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.graphics.Color as AndroidColor
@@ -21,6 +22,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,6 +42,7 @@ import com.example.auth.AuthScreen
 import com.example.auth.signOutUser
 import com.example.notifications.TurboNotificationManager
 import com.example.ui.screens.ActiveTimeBlockScreen
+import com.example.ui.screens.ActivityProfileScreen
 import com.example.ui.screens.EndOfDaySummaryOverlay
 import com.example.ui.screens.IncomingCallAuditScreen
 import com.example.ui.screens.LockScreenNotificationsScreen
@@ -47,7 +52,6 @@ import com.example.ui.screens.SevenPointCheckInScreen
 import com.example.ui.screens.SilenceResetScreen
 import com.example.ui.screens.StartTimeBlockSheetOverlay
 import com.example.ui.screens.TurboDashboardScreen
-import com.example.ui.theme.LocalTurboColors
 import com.example.ui.theme.TurboModeTheme
 import com.example.viewmodel.TurboDestination
 import com.example.viewmodel.TurboModeViewModel
@@ -63,8 +67,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+            statusBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
         )
         TurboNotificationManager.ensureChannels(this)
         pendingNavAction.value = intent?.getStringExtra(TurboNotificationManager.EXTRA_NAV_ACTION)
@@ -154,7 +158,26 @@ private fun AuthenticatedTurboApp(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pendingNavAction by pendingNavActionFlow.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val turboColors = LocalTurboColors.current
+    val view = LocalView.current
+
+    val isDarkContrastScreen = state.destination == TurboDestination.IncomingCallAudit ||
+        state.destination == TurboDestination.LockScreenNotifications
+
+    SideEffect {
+        val window = (view.context as? Activity)?.window ?: return@SideEffect
+        val controller = WindowCompat.getInsetsController(window, view)
+        controller.isAppearanceLightStatusBars = !isDarkContrastScreen
+        controller.isAppearanceLightNavigationBars = !isDarkContrastScreen
+    }
+
+    DisposableEffect(view) {
+        onDispose {
+            val window = (view.context as? Activity)?.window ?: return@onDispose
+            val controller = WindowCompat.getInsetsController(window, view)
+            controller.isAppearanceLightStatusBars = true
+            controller.isAppearanceLightNavigationBars = true
+        }
+    }
 
     LaunchedEffect(pendingNavAction) {
         val action = pendingNavAction
@@ -183,6 +206,7 @@ private fun AuthenticatedTurboApp(
                 TurboDashboardScreen(
                     state = state,
                     onToggleDayState = viewModel::onDayStateToggleClicked,
+                    onOpenActivityProfile = viewModel::openActivityProfile,
                     onOpenNotifications = viewModel::openNotificationsCenter,
                     onSignOut = {
                         if (isTestMode) {
@@ -320,6 +344,14 @@ private fun AuthenticatedTurboApp(
                     onNotificationPermissionGranted = viewModel::repostActiveNotificationsIfNeeded
                 )
             }
+
+            TurboDestination.ActivityProfile -> {
+                ActivityProfileScreen(
+                    state = state,
+                    onSelectDate = viewModel::selectProfileDate,
+                    onBack = viewModel::returnToDashboard
+                )
+            }
         }
 
         SnackbarHost(
@@ -332,8 +364,8 @@ private fun AuthenticatedTurboApp(
             Snackbar(
                 snackbarData = data,
                 shape = RoundedCornerShape(16.dp),
-                containerColor = turboColors.containerFill,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

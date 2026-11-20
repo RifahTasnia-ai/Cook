@@ -81,7 +81,7 @@ fun StartTimeBlockSheetOverlay(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.78f))
+            .background(turboColors.modalBackdrop)
             .clickable(onClick = onDismiss),
         contentAlignment = Alignment.BottomCenter
     ) {
@@ -184,20 +184,14 @@ fun StartTimeBlockSheetOverlay(
                             Surface(
                                 onClick = { onSelectTask(item.task.id) },
                                 shape = RoundedCornerShape(16.dp),
-                                color = if (isSelected) MaterialTheme.colorScheme.secondary else turboColors.containerFill,
+                                color = if (isSelected) turboColors.recessedSurface else MaterialTheme.colorScheme.surface,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(min = 58.dp)
-                                    .then(
-                                        if (isSelected) {
-                                            Modifier.border(
-                                                1.5.dp,
-                                                MaterialTheme.colorScheme.primary,
-                                                RoundedCornerShape(16.dp)
-                                            )
-                                        } else {
-                                            Modifier
-                                        }
+                                    .border(
+                                        width = if (isSelected) 1.5.dp else 1.dp,
+                                        color = if (isSelected) MaterialTheme.colorScheme.secondary else turboColors.hairlineBorder,
+                                        shape = RoundedCornerShape(16.dp)
                                     )
                                     .testTag("block_task_option_${item.task.id}")
                             ) {
@@ -222,14 +216,14 @@ fun StartTimeBlockSheetOverlay(
                                         Text(
                                             text = item.sectionTitle,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = if (isS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = if (isS) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
                                         text = item.multiplierLabel,
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = if (isS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -358,7 +352,7 @@ private fun DurationChip(
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = if (selected) MaterialTheme.colorScheme.primary else turboColors.containerFill,
+        color = if (selected) MaterialTheme.colorScheme.secondary else turboColors.recessedSurface,
         modifier = Modifier
             .height(48.dp)
             .testTag(tag)
@@ -370,7 +364,7 @@ private fun DurationChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                color = if (selected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface
             )
         }
     }

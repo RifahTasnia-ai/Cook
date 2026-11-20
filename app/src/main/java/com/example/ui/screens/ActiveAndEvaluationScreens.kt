@@ -126,7 +126,7 @@ fun ActiveTimeBlockScreen(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(CircleShape)
-                        .background(turboColors.containerFill)
+                        .background(turboColors.hairlineBorder)
                 ) {
                     Box(
                         modifier = Modifier
@@ -182,11 +182,16 @@ fun PostBlockEvaluationScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        contentAlignment = Alignment.Center
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(turboColors.modalBackdrop)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            contentAlignment = Alignment.Center
+        ) {
         Surface(
             shape = RoundedCornerShape(24.dp),
             color = turboColors.elevatedCard,
@@ -245,9 +250,9 @@ fun PostBlockEvaluationScreen(
                         valueRange = 1f..10f,
                         steps = 8,
                         colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.primary,
+                            thumbColor = MaterialTheme.colorScheme.secondary,
                             activeTrackColor = MaterialTheme.colorScheme.secondary,
-                            inactiveTrackColor = turboColors.containerFill
+                            inactiveTrackColor = turboColors.hairlineBorder
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -283,7 +288,7 @@ fun PostBlockEvaluationScreen(
                             Surface(
                                 onClick = { onFinishingChange(rating) },
                                 shape = CircleShape,
-                                color = if (selected) MaterialTheme.colorScheme.primary else turboColors.containerFill,
+                                color = if (selected) MaterialTheme.colorScheme.secondary else turboColors.recessedSurface,
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
@@ -293,7 +298,7 @@ fun PostBlockEvaluationScreen(
                                     Text(
                                         text = rating.toString(),
                                         style = MaterialTheme.typography.labelLarge,
-                                        color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                                        color = if (selected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -348,9 +353,9 @@ fun PostBlockEvaluationScreen(
                             valueRange = 1f..20f,
                             steps = 18,
                             colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.primary,
+                                thumbColor = MaterialTheme.colorScheme.secondary,
                                 activeTrackColor = MaterialTheme.colorScheme.secondary,
-                                inactiveTrackColor = turboColors.containerFill
+                                inactiveTrackColor = turboColors.hairlineBorder
                             ),
                             modifier = Modifier
                                 .weight(1f)
@@ -360,7 +365,7 @@ fun PostBlockEvaluationScreen(
                         Surface(
                             onClick = { onActionChange((draft.actionRate + 1).coerceAtMost(20)) },
                             shape = CircleShape,
-                            color = turboColors.containerFill,
+                            color = turboColors.recessedSurface,
                             modifier = Modifier
                                 .size(48.dp)
                                 .testTag("action_rate_plus")
@@ -404,6 +409,7 @@ fun PostBlockEvaluationScreen(
                     }
                 }
             }
+        }
         }
     }
 }

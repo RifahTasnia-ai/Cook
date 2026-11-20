@@ -96,7 +96,7 @@ fun EndOfDaySummaryOverlay(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.78f))
+            .background(turboColors.modalBackdrop)
             .clickable(onClick = onDismiss)
             .statusBarsPadding()
             .navigationBarsPadding()
@@ -129,12 +129,12 @@ fun EndOfDaySummaryOverlay(
                     )
                     Surface(
                         shape = CircleShape,
-                        color = if (passed) MaterialTheme.colorScheme.secondary else turboColors.warningContainer
+                        color = if (passed) turboColors.activeBadgeFill else turboColors.warningContainer
                     ) {
                         Text(
                             text = if (passed) "Active Zone — Passed" else "Laziness Zone — Missed",
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (passed) MaterialTheme.colorScheme.onSecondary else turboColors.onWarningContainer,
+                            color = if (passed) turboColors.activeBadgeText else turboColors.onWarningContainer,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                         )
                     }
@@ -253,8 +253,8 @@ private fun SummaryMetricTile(
     val turboColors = LocalTurboColors.current
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = turboColors.recessedSurface,
-        modifier = modifier
+        color = MaterialTheme.colorScheme.surface,
+        modifier = modifier.border(1.dp, turboColors.hairlineBorder, RoundedCornerShape(16.dp))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -341,7 +341,7 @@ fun LockScreenNotificationsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(turboColors.darkContrastCanvas)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -370,15 +370,20 @@ fun LockScreenNotificationsScreen(
                         IconButton(
                             onClick = onBack,
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(48.dp)
                                 .clip(CircleShape)
-                                .background(turboColors.elevatedCard)
+                                .background(turboColors.darkContrastTrack)
+                                .border(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.55f),
+                                    CircleShape
+                                )
                                 .testTag("notifications_back_button")
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back to dashboard",
-                                tint = MaterialTheme.colorScheme.onSurface,
+                                tint = turboColors.darkContrastText,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -390,19 +395,19 @@ fun LockScreenNotificationsScreen(
                             Icon(
                                 imageVector = Icons.Outlined.SignalCellularAlt,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = turboColors.darkContrastMuted,
                                 modifier = Modifier.size(16.dp)
                             )
                             Icon(
                                 imageVector = Icons.Outlined.Wifi,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = turboColors.darkContrastMuted,
                                 modifier = Modifier.size(16.dp)
                             )
                             Icon(
                                 imageVector = Icons.Outlined.BatteryFull,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = turboColors.darkContrastMuted,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -411,12 +416,12 @@ fun LockScreenNotificationsScreen(
                     Text(
                         text = currentTimeHhMm(),
                         style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = turboColors.darkContrastText
                     )
                     Text(
                         text = "${currentDateSubtitle()} • Turbo Mode Active",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = turboColors.darkContrastMuted
                     )
 
                     // Native Android Notification Permission / Live Dispatch Bar
@@ -431,8 +436,10 @@ fun LockScreenNotificationsScreen(
                                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                 },
                                 shape = CircleShape,
-                                color = turboColors.containerFill,
-                                modifier = Modifier.testTag("grant_notification_permission_button")
+                                color = turboColors.darkContrastTrack,
+                                modifier = Modifier
+                                    .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                                    .testTag("grant_notification_permission_button")
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
@@ -442,13 +449,13 @@ fun LockScreenNotificationsScreen(
                                     Icon(
                                         imageVector = Icons.Outlined.NotificationsActive,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Text(
                                         text = "Enable OS Notifications",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = turboColors.darkContrastText
                                     )
                                 }
                             }
@@ -476,8 +483,10 @@ fun LockScreenNotificationsScreen(
                                     }
                                 },
                                 shape = CircleShape,
-                                color = turboColors.containerFill,
-                                modifier = Modifier.testTag("send_live_notifications_button")
+                                color = turboColors.darkContrastTrack,
+                                modifier = Modifier
+                                    .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                                    .testTag("send_live_notifications_button")
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
@@ -487,13 +496,13 @@ fun LockScreenNotificationsScreen(
                                     Icon(
                                         imageVector = Icons.Outlined.NotificationsActive,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Text(
                                         text = "Test Live OS Notifications",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = turboColors.darkContrastText
                                     )
                                 }
                             }
@@ -504,7 +513,7 @@ fun LockScreenNotificationsScreen(
                         Text(
                             text = dispatchStatus ?: "",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = MaterialTheme.colorScheme.tertiary,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -646,7 +655,7 @@ fun LockScreenNotificationsScreen(
                                 .fillMaxWidth()
                                 .height(6.dp)
                                 .clip(CircleShape)
-                                .background(turboColors.containerFill)
+                                .background(turboColors.hairlineBorder)
                         ) {
                             Box(
                                 modifier = Modifier

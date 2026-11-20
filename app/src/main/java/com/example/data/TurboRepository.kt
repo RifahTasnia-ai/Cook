@@ -26,6 +26,7 @@ import kotlin.math.round
 interface TurboDataSource {
     fun observeTasks(): Flow<List<PriorityTask>>
     fun observeDailyLog(dateKey: String): Flow<DailyLog?>
+    fun observeDailyLogsHistory(): Flow<List<DailyLog>>
     fun observeTodayTimeBlocks(dateKey: String): Flow<List<TimeBlockRecord>>
     fun observeTodayCheckIns(dateKey: String): Flow<List<CheckInRecord>>
     suspend fun ensureDailyLog(dateKey: String): Result<Unit>
@@ -126,6 +127,32 @@ class TurboRepository(private val db: FirebaseFirestore) : TurboDataSource {
                     val exceptionToLog = firestoreError ?: (error as? Exception)
                     if (exceptionToLog != null && auth.currentUser?.uid == uid) {
                         handleFirestoreError(exceptionToLog, OperationType.GET, path)
+                    }
+                    throw error
+                }
+        )
+    }
+
+    override fun observeDailyLogsHistory(): Flow<List<DailyLog>> = flow {
+        val uid = requireUserId()
+        val path = "users/$uid/dailyLogs"
+        emitAll(
+            db.collection("users").document(uid).collection("dailyLogs")
+                .snapshots()
+                .map { snapshot ->
+                    snapshot.toObjects(
+                        DailyLog::class.java,
+                        DocumentSnapshot.ServerTimestampBehavior.ESTIMATE
+                    ).sortedByDescending { it.dateKey }
+                }
+                .catch { error ->
+                    val firestoreError = generateSequence(error) { it.cause }
+                        .filterIsInstance<FirebaseFirestoreException>()
+                        .firstOrNull()
+                    if (firestoreError == null && error is CancellationException) throw error
+                    val exceptionToLog = firestoreError ?: (error as? Exception)
+                    if (exceptionToLog != null && auth.currentUser?.uid == uid) {
+                        handleFirestoreError(exceptionToLog, OperationType.LIST, path)
                     }
                     throw error
                 }
@@ -569,12 +596,18 @@ class TestTurboRepository : TurboDataSource {
     private val testUid = "local_test_user"
     private val tasksFlow = MutableStateFlow<List<PriorityTask>>(emptyList())
     private val dailyLogFlow = MutableStateFlow(DailyLog(userId = testUid, dateKey = todayDateKey()))
+    private val pastLogsFlow = MutableStateFlow<Map<String, DailyLog>>(emptyMap())
     private val timeBlocksFlow = MutableStateFlow<List<TimeBlockRecord>>(emptyList())
     private val checkInsFlow = MutableStateFlow<List<CheckInRecord>>(emptyList())
 
     override fun observeTasks(): Flow<List<PriorityTask>> = tasksFlow
 
     override fun observeDailyLog(dateKey: String): Flow<DailyLog?> = dailyLogFlow
+
+    override fun observeDailyLogsHistory(): Flow<List<DailyLog>> =
+        kotlinx.coroutines.flow.combine(dailyLogFlow, pastLogsFlow) { today, past ->
+            (past + (today.dateKey to today)).values.sortedByDescending { it.dateKey }
+        }
 
     override fun observeTodayTimeBlocks(dateKey: String): Flow<List<TimeBlockRecord>> =
         timeBlocksFlow.map { list -> list.filter { it.dateKey == dateKey } }
@@ -798,6 +831,36 @@ class TestTurboRepository : TurboDataSource {
                 updatedAt = now
             )
         }
+        // Populate sample recent daily history in Test Mode so the 6-step Red-to-Green heatmap can be inspected right away
+        val cal = java.util.Calendar.getInstance()
+        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        val sampleScores = listOf(
+            94.0, 76.5, 58.0, 82.0, 0.0, 42.0, 64.5,
+            91.0, 73.0, 52.0, 24.0, 0.0, 61.0, 86.0,
+            95.0, 68.0, 45.0, 18.0, 55.0, 78.5, 92.0,
+            63.0, 84.0, 39.0, 0.0, 57.0, 71.0, 88.0,
+            96.0, 62.0, 49.0, 28.0, 51.0, 79.0, 67.0
+        )
+        val generated = mutableMapOf<String, DailyLog>()
+        sampleScores.forEachIndexed { idx, score ->
+            cal.time = java.util.Date()
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -(idx + 1))
+            val dk = fmt.format(cal.time)
+            val mins = if (score <= 0.0) 0L else (score * 2.8).toLong().coerceAtLeast(30L)
+            val ciPts = if (score <= 0.0) 0L else (((idx % 4) + 1) * 5L)
+            generated[dk] = DailyLog(
+                userId = testUid,
+                dateKey = dk,
+                dayState = DayState.SLEEP.code,
+                totalScore = score,
+                s1CompletedCount = if (score >= 50.0) 1L else 0L,
+                abCompletedCount = if (score >= 50.0) 3L else if (score > 0.0) 1L else 0L,
+                checkInPoints = ciPts,
+                trackedMinutes = mins,
+                updatedAt = now
+            )
+        }
+        pastLogsFlow.value = generated
         return Result.success(Unit)
     }
 }

@@ -17,4 +17,6 @@
     <string name="score_calculation_report">Score Calculation Report</string>
     <string name="view_calculation_report">View calculation report</string>
     <string name="three_hour_audit_subtitle">3-Hour Accountability Check-In</string>
+    <string name="activity_profile">Activity Profile</string>
+    <string name="activity_profile_cd">Open Activity Profile heatmap</string>
 </resources>

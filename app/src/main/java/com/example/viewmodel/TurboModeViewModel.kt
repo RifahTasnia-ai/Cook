@@ -44,6 +44,7 @@ sealed interface TurboDestination {
     data object SevenPointCheckIn : TurboDestination
     data object EndOfDaySummary : TurboDestination
     data object LockScreenNotifications : TurboDestination
+    data object ActivityProfile : TurboDestination
 }
 
 data class ActiveBlockSession(
@@ -100,6 +101,8 @@ data class TurboUiState(
     val tasks: List<PriorityTask> = emptyList(),
     val displayTasks: List<DisplayTaskItem> = emptyList(),
     val dailyLog: DailyLog = DailyLog(),
+    val dailyLogsByDate: Map<String, DailyLog> = emptyMap(),
+    val selectedProfileDateKey: String = todayDateKey(),
     val todayTimeBlocks: List<TimeBlockRecord> = emptyList(),
     val todayCheckIns: List<CheckInRecord> = emptyList(),
     // Start Block Sheet state
@@ -149,12 +152,14 @@ class TurboModeViewModel(
             combine(
                 repository.observeTasks(),
                 repository.observeDailyLog(dateKey),
+                repository.observeDailyLogsHistory(),
                 repository.observeTodayTimeBlocks(dateKey),
                 repository.observeTodayCheckIns(dateKey)
-            ) { tasks, log, blocks, checkIns ->
+            ) { tasks, log, history, blocks, checkIns ->
                 FirestoreBundle(
                     tasks = tasks,
                     log = log ?: DailyLog(dateKey = dateKey),
+                    history = history,
                     blocks = blocks,
                     checkIns = checkIns
                 )
@@ -182,6 +187,10 @@ class TurboModeViewModel(
                     } else {
                         AuditAlarmScheduler.cancelAudit(getApplication())
                     }
+                    val historyMap = buildMap {
+                        bundle.history.forEach { put(it.dateKey, it) }
+                        put(bundle.log.dateKey, bundle.log)
+                    }
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
@@ -189,6 +198,7 @@ class TurboModeViewModel(
                             tasks = bundle.tasks,
                             displayTasks = display,
                             dailyLog = bundle.log,
+                            dailyLogsByDate = historyMap,
                             todayTimeBlocks = bundle.blocks,
                             todayCheckIns = bundle.checkIns,
                             pendingAuditNodeIndex = bundle.log.nextCheckInSlot()
@@ -678,10 +688,23 @@ class TurboModeViewModel(
         }
     }
 
-    // --- Screen 9: Android Lock-Screen & Notifications ---
+    // --- Screen 9 & 10: Lock-Screen Preview & Activity Profile ---
 
     fun openNotificationsCenter() {
         _uiState.update { it.copy(destination = TurboDestination.LockScreenNotifications) }
+    }
+
+    fun openActivityProfile() {
+        _uiState.update {
+            it.copy(
+                selectedProfileDateKey = it.dateKey,
+                destination = TurboDestination.ActivityProfile
+            )
+        }
+    }
+
+    fun selectProfileDate(dateKey: String) {
+        _uiState.update { it.copy(selectedProfileDateKey = dateKey) }
     }
 
     fun returnToDashboard() {
@@ -726,6 +749,7 @@ class TurboModeViewModel(
     private data class FirestoreBundle(
         val tasks: List<PriorityTask>,
         val log: DailyLog,
+        val history: List<DailyLog>,
         val blocks: List<TimeBlockRecord>,
         val checkIns: List<CheckInRecord>
     )

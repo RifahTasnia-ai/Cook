@@ -227,6 +227,7 @@ fun IncomingCallAuditScreen(
     // Strictly mandatory audit interruption: no decline/dismiss/snooze
     BackHandler(enabled = true) { /* Slide to answer required */ }
 
+    val turboColors = LocalTurboColors.current
     val infiniteTransition = rememberInfiniteTransition(label = "audit_ring_pulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 0.85f,
@@ -238,7 +239,7 @@ fun IncomingCallAuditScreen(
         label = "ring_scale"
     )
     val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.55f,
+        initialValue = 0.65f,
         targetValue = 0.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1800, easing = LinearEasing),
@@ -250,7 +251,7 @@ fun IncomingCallAuditScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(turboColors.darkContrastCanvas)
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 28.dp),
@@ -266,7 +267,7 @@ fun IncomingCallAuditScreen(
             Text(
                 text = "MANDATORY CHECK-IN",
                 style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.8.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = turboColors.darkContrastMuted,
                 modifier = Modifier.padding(top = 16.dp)
             )
 
@@ -284,23 +285,23 @@ fun IncomingCallAuditScreen(
                             .size(144.dp)
                             .scale(pulseScale)
                             .alpha(pulseAlpha)
-                            .border(1.5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                            .border(1.5.dp, MaterialTheme.colorScheme.tertiary, CircleShape)
                     )
                     Box(
                         modifier = Modifier
                             .size(112.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f), CircleShape)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.65f), CircleShape)
                     )
                     Box(
                         modifier = Modifier
                             .size(80.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary, CircleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Schedule,
                             contentDescription = "3-Hour Audit",
-                            tint = MaterialTheme.colorScheme.secondary,
+                            tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(32.dp)
                         )
                     }
@@ -313,13 +314,13 @@ fun IncomingCallAuditScreen(
                     Text(
                         text = "3-Hour Turbo Audit",
                         style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = turboColors.darkContrastText,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = stringResource(R.string.three_hour_audit_subtitle),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = turboColors.darkContrastMuted,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -350,8 +351,8 @@ private fun SlideToAnswerControl(
         modifier = modifier
             .height(58.dp)
             .clip(CircleShape)
-            .background(turboColors.elevatedCard)
-            .border(1.dp, turboColors.hairlineBorder, CircleShape)
+            .background(turboColors.darkContrastTrack)
+            .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.65f), CircleShape)
             .padding(horizontal = 6.dp)
             .testTag("slide_to_answer_track"),
         contentAlignment = Alignment.CenterStart
@@ -368,7 +369,7 @@ private fun SlideToAnswerControl(
         Text(
             text = if (answered || progress >= 0.88f) "Answering Audit..." else "Slide to Answer",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = (1f - progress * 0.45f).coerceIn(0.4f, 1f)),
+            color = turboColors.darkContrastText.copy(alpha = (1f - progress * 0.45f).coerceIn(0.45f, 1f)),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -378,7 +379,7 @@ private fun SlideToAnswerControl(
                 .offset { IntOffset(animatedOffset.roundToInt(), 0) }
                 .size(thumbSizeDp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.surface)
                 .draggable(
                     orientation = Orientation.Horizontal,
                     state = rememberDraggableState { delta ->
@@ -402,7 +403,7 @@ private fun SlideToAnswerControl(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Slide to Answer",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = turboColors.darkContrastCanvas,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -446,6 +447,7 @@ fun SevenPointCheckInScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
+            .background(turboColors.modalBackdrop)
             .statusBarsPadding()
             .navigationBarsPadding()
             .imePadding()
@@ -459,10 +461,10 @@ fun SevenPointCheckInScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Slim Floating Live Status Pill at Top (#27524B)
+            // Slim Floating Live Status Pill at Top (#1B2E29 with #88BDA4 live dot)
             Surface(
                 shape = CircleShape,
-                color = turboColors.containerFill,
+                color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp,
                 modifier = Modifier.padding(top = 4.dp)
             ) {
@@ -475,12 +477,12 @@ fun SevenPointCheckInScreen(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.secondary)
+                            .background(MaterialTheme.colorScheme.tertiary)
                     )
                     Text(
                         text = "3-Hour Audit • ${session.startedAtLabel} • ${formatMmSs(session.elapsedSeconds)}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -491,7 +493,7 @@ fun SevenPointCheckInScreen(
                     .fillMaxWidth()
                     .padding(vertical = 20.dp)
             ) {
-                // Subtle Stacked-Card Depth Peeking Underneath (#122724)
+                // Subtle Stacked-Card Depth Peeking Underneath (#DCEBD2)
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -501,9 +503,14 @@ fun SevenPointCheckInScreen(
                         .height(24.dp)
                         .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
                         .background(turboColors.recessedSurface)
+                        .border(
+                            1.dp,
+                            turboColors.hairlineBorder,
+                            RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+                        )
                 )
 
-                // Active Focused Prompt Card (#17322E with 1dp #27524B hairline)
+                // Active Focused Prompt Card (#F5FAF1 with 1dp #B1D3B9 hairline)
                 Surface(
                     shape = RoundedCornerShape(24.dp),
                     color = turboColors.elevatedCard,
@@ -533,7 +540,7 @@ fun SevenPointCheckInScreen(
                                             .clip(CircleShape)
                                             .background(
                                                 if (idx <= stepIndex) MaterialTheme.colorScheme.secondary
-                                                else turboColors.containerFill
+                                                else turboColors.hairlineBorder
                                             )
                                     )
                                 }
@@ -628,6 +635,7 @@ fun SevenPointCheckInScreen(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(turboColors.elevatedCard)
+                        .border(1.dp, turboColors.hairlineBorder, CircleShape)
                         .testTag("checkin_prev_step_button")
                 ) {
                     Icon(
@@ -645,7 +653,7 @@ fun SevenPointCheckInScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = turboColors.containerFill,
+                        disabledContainerColor = turboColors.recessedSurface,
                         disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier

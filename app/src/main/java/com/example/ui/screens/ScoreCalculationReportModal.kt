@@ -103,6 +103,7 @@ fun ScoreCalculationReportModal(
                             .size(48.dp)
                             .clip(CircleShape)
                             .background(turboColors.elevatedCard)
+                            .border(1.dp, turboColors.hairlineBorder, CircleShape)
                             .testTag("close_score_report_button")
                     ) {
                         Icon(
@@ -152,12 +153,12 @@ fun ScoreCalculationReportModal(
 
                             Surface(
                                 shape = CircleShape,
-                                color = if (isActiveZone) turboColors.success else turboColors.warningContainer
+                                color = if (isActiveZone) turboColors.activeBadgeFill else turboColors.warningContainer
                             ) {
                                 Text(
                                     text = if (isActiveZone) stringResource(R.string.active_zone) else stringResource(R.string.laziness_zone),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = if (isActiveZone) turboColors.onSuccess else turboColors.onWarningContainer,
+                                    color = if (isActiveZone) turboColors.activeBadgeText else turboColors.onWarningContainer,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                                 )
                             }

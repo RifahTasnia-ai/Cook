@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -79,6 +80,7 @@ import kotlin.math.roundToInt
 fun TurboDashboardScreen(
     state: TurboUiState,
     onToggleDayState: () -> Unit,
+    onOpenActivityProfile: () -> Unit,
     onOpenNotifications: () -> Unit,
     onSignOut: () -> Unit,
     onOpenScoreReport: () -> Unit,
@@ -147,12 +149,12 @@ fun TurboDashboardScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val isWakeUp = state.dailyLog.dayStateEnum() == DayState.WAKE_UP
@@ -161,13 +163,14 @@ fun TurboDashboardScreen(
                             shape = CircleShape,
                             color = turboColors.elevatedCard,
                             modifier = Modifier
-                                .height(44.dp)
+                                .height(42.dp)
+                                .border(1.dp, turboColors.hairlineBorder, CircleShape)
                                 .testTag("day_state_toggle")
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 16.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -187,17 +190,35 @@ fun TurboDashboardScreen(
                         }
 
                         IconButton(
-                            onClick = onOpenNotifications,
+                            onClick = onOpenActivityProfile,
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
                                 .background(turboColors.elevatedCard)
+                                .border(1.dp, turboColors.hairlineBorder, CircleShape)
+                                .testTag("activity_profile_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.GridView,
+                                contentDescription = stringResource(R.string.activity_profile_cd),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = onOpenNotifications,
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(turboColors.elevatedCard)
+                                .border(1.dp, turboColors.hairlineBorder, CircleShape)
                                 .testTag("notifications_center_button")
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Notifications,
                                 contentDescription = stringResource(R.string.notifications_center_cd),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -205,9 +226,10 @@ fun TurboDashboardScreen(
                         IconButton(
                             onClick = onSignOut,
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
                                 .background(turboColors.elevatedCard)
+                                .border(1.dp, turboColors.hairlineBorder, CircleShape)
                                 .testTag("sign_out_button")
                         ) {
                             Icon(
@@ -221,7 +243,7 @@ fun TurboDashboardScreen(
                 }
             }
 
-            // Hero 0–100 Bento Scorecard (Tap to open Score Calculation Report)
+            // Hero 0–100 Botanical Sage Scorecard (Tap to open Score Calculation Report)
             item(key = "scorecard") {
                 ActiveLazinessScorecard(
                     score = state.dailyLog.totalScore,
@@ -246,7 +268,8 @@ fun TurboDashboardScreen(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
-                            .background(turboColors.containerFill)
+                            .background(turboColors.elevatedCard)
+                            .border(1.dp, turboColors.hairlineBorder, CircleShape)
                             .testTag("open_add_task_button")
                     ) {
                         Icon(
@@ -304,7 +327,7 @@ fun TurboDashboardScreen(
                                     enabled = !state.isBusy,
                                     shape = CircleShape,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = turboColors.containerFill,
+                                        containerColor = turboColors.recessedSurface,
                                         contentColor = MaterialTheme.colorScheme.onSurface
                                     ),
                                     modifier = Modifier
@@ -340,7 +363,7 @@ fun TurboDashboardScreen(
             }
         }
 
-        // Floating Bottom Pill CTA
+        // Floating Bottom Pill CTA (#1B2E29 fill, #F5FAF1 text)
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -356,7 +379,7 @@ fun TurboDashboardScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -421,12 +444,12 @@ private fun ActiveLazinessScorecard(
                 )
                 Surface(
                     shape = CircleShape,
-                    color = if (isActiveZone) turboColors.success else turboColors.warningContainer
+                    color = if (isActiveZone) turboColors.activeBadgeFill else turboColors.warningContainer
                 ) {
                     Text(
                         text = if (isActiveZone) stringResource(R.string.active_zone) else stringResource(R.string.laziness_zone),
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isActiveZone) turboColors.onSuccess else turboColors.onWarningContainer,
+                        color = if (isActiveZone) turboColors.activeBadgeText else turboColors.onWarningContainer,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
@@ -460,7 +483,7 @@ private fun ActiveLazinessScorecard(
                 )
             }
 
-            // Thick Tactile Pill Progress Bar with Crisp 50-Point Pass Threshold Centered at 50%
+            // Progress Bar Track #DCEBD2, Laziness Fill #C94A38, Active Fill #659287, Notch #1B2E29 at 50%
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 BoxWithConstraints(
                     modifier = Modifier
@@ -474,7 +497,7 @@ private fun ActiveLazinessScorecard(
                             .fillMaxWidth()
                             .height(14.dp)
                             .clip(CircleShape)
-                            .background(turboColors.containerFill)
+                            .background(turboColors.recessedSurface)
                     ) {
                         Box(
                             modifier = Modifier
@@ -484,7 +507,6 @@ private fun ActiveLazinessScorecard(
                                 .background(if (isActiveZone) turboColors.success else turboColors.warning)
                         )
                     }
-                    // Centered threshold notch at 50 / 100
                     Box(
                         modifier = Modifier
                             .offset(x = fullWidth * 0.5f - 1.dp)
@@ -554,13 +576,9 @@ private fun PriorityTierBoxSection(
     val isEliminate = tier == PriorityTier.E
     val isMutedTier = tier == PriorityTier.D || tier == PriorityTier.E
 
-    val containerBg = when {
-        isCritical -> turboColors.elevatedCard
-        isMutedTier -> turboColors.recessedSurface
-        else -> turboColors.elevatedCard
-    }
+    val containerBg = if (isMutedTier) turboColors.recessedSurface else turboColors.elevatedCard
     val borderColor = if (isCritical) {
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+        MaterialTheme.colorScheme.primary
     } else {
         turboColors.hairlineBorder
     }
@@ -592,18 +610,18 @@ private fun PriorityTierBoxSection(
                 Text(
                     text = tier.sectionTitle,
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (isCritical) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isCritical) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (tier.isExecutableInBlock) {
                     Surface(
                         shape = CircleShape,
-                        color = if (isCritical) MaterialTheme.colorScheme.primaryContainer else turboColors.containerFill
+                        color = if (isCritical) turboColors.criticalBadgeFill else turboColors.recessedSurface
                     ) {
                         Text(
                             text = tier.multiplierLabel,
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (isCritical) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (isCritical) turboColors.criticalBadgeText else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         )
                     }
@@ -614,7 +632,7 @@ private fun PriorityTierBoxSection(
             items.forEachIndexed { index, item ->
                 if (index > 0) {
                     HorizontalDivider(
-                        color = turboColors.hairlineBorder.copy(alpha = 0.45f),
+                        color = turboColors.hairlineBorder.copy(alpha = 0.7f),
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
                 }
@@ -635,7 +653,6 @@ private fun PriorityTierBoxSection(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // 48dp accessible circular check button
                         Box(
                             modifier = Modifier
                                 .size(44.dp)
@@ -696,7 +713,7 @@ private fun PriorityTierBoxSection(
                         Icon(
                             imageVector = Icons.Default.DeleteOutline,
                             contentDescription = "Delete task",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -748,7 +765,7 @@ private fun AddPriorityTaskDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(R.string.close_cd),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -767,7 +784,7 @@ private fun AddPriorityTaskDialog(
                             Text(
                                 text = "Single concrete deliverable",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
                             )
                         },
                         singleLine = true,
@@ -786,7 +803,7 @@ private fun AddPriorityTaskDialog(
                     )
                 }
 
-                // Clean Executive 2-Column Priority Selector (Zero Awkward Dropdown Wrapping)
+                // Clean Executive 2-Column Priority Selector
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "Priority Level",
@@ -805,7 +822,7 @@ private fun AddPriorityTaskDialog(
                                     Surface(
                                         onClick = { selectedTier = tier },
                                         shape = RoundedCornerShape(14.dp),
-                                        color = if (selected) MaterialTheme.colorScheme.secondary else turboColors.recessedSurface,
+                                        color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface,
                                         modifier = Modifier
                                             .weight(1f)
                                             .heightIn(min = 58.dp)
@@ -828,7 +845,7 @@ private fun AddPriorityTaskDialog(
                                                 Text(
                                                     text = tier.sectionTitle,
                                                     style = MaterialTheme.typography.labelMedium,
-                                                    color = MaterialTheme.colorScheme.onSurface,
+                                                    color = if (selected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis,
                                                     modifier = Modifier.weight(1f)
@@ -837,7 +854,7 @@ private fun AddPriorityTaskDialog(
                                                     Text(
                                                         text = tier.multiplierLabel,
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                                        color = if (selected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurfaceVariant
                                                     )
                                                 }
                                             }
@@ -845,7 +862,7 @@ private fun AddPriorityTaskDialog(
                                                 text = tier.selectorSubtitle,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = if (selected) {
-                                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                                                    MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.9f)
                                                 } else {
                                                     MaterialTheme.colorScheme.onSurfaceVariant
                                                 },

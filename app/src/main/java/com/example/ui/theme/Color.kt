@@ -2,41 +2,32 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Midnight Fern — Dark Botanical Tonal Palette (exact tokens from turbo_mode_design_system.md)
-val FernPrimary = Color(0xFFDCEBE6)
-val FernOnPrimary = Color(0xFF0A1412)
-val FernPrimaryContainer = Color(0xFF27524B)
-val FernOnPrimaryContainer = Color(0xFFDCEBE6)
+// Botanical Sage Daylight — Core Color Hunt Swatches (#659287, #88BDA4, #B1D3B9, #E6F2DD)
+val SageDeepAccent = Color(0xFF659287)
+val SageMintAccent = Color(0xFF88BDA4)
+val SageMistBorder = Color(0xFFB1D3B9)
+val SageDewCanvas = Color(0xFFE6F2DD)
 
-val FernSecondary = Color(0xFF4D7B73)
-val FernOnSecondary = Color(0xFFF8F9F8)
-val FernSecondaryContainer = Color(0xFF27524B)
-val FernOnSecondaryContainer = Color(0xFFDCEBE6)
+// Derived Accessibility Companions (>10:1 WCAG AAA contrast with Deep Botanical Pine Ink)
+val SageElevatedCard = Color(0xFFF5FAF1)
+val SageRecessedInset = Color(0xFFDCEBD2)
+val SagePineInk = Color(0xFF1B2E29)
+val SageSecondaryInk = Color(0xFF47665E)
+val SageDarkTrack = Color(0xFF2B453E)
 
-val FernSurface = Color(0xFF0A1412)
-val FernSurfaceContainerLow = Color(0xFF122724)
-val FernSurfaceContainerLowest = Color(0xFF17322E)
-val FernSurfaceContainer = Color(0xFF27524B)
-val FernSurfaceContainerHigh = Color(0xFF27524B)
+// Semantic Status Tokens
+val SageLazinessText = Color(0xFFA63A2B)
+val SageLazinessFill = Color(0xFFF4DDD8)
+val SageLazinessBar = Color(0xFFC94A38)
+val SageActiveBadgeFill = Color(0xFF88BDA4)
+val SageActiveBadgeText = Color(0xFF1B2E29)
+val SageCriticalFill = Color(0xFF1B2E29)
+val SageCriticalText = Color(0xFFE6F2DD)
 
-val FernOnSurface = Color(0xFFDCEBE6)
-val FernOnSurfaceVariant = Color(0xFF8FB8AE)
-val FernOutline = Color(0xFF8FB8AE)
-val FernOutlineVariant = Color(0xFF27524B)
-
-val FernSuccess = Color(0xFF4D7B73)
-val FernOnSuccess = Color(0xFFF8F9F8)
-val FernSuccessContainer = Color(0xFF27524B)
-val FernOnSuccessContainer = Color(0xFFDCEBE6)
-
-val FernWarning = Color(0xFFC98A4B)
-val FernOnWarning = Color(0xFF0A1412)
-val FernWarningContainer = Color(0xFF2A2218)
-val FernOnWarningContainer = Color(0xFFC98A4B)
-
-val FernError = Color(0xFFE06C65)
-val FernOnError = Color(0xFF0A1412)
-val FernErrorContainer = Color(0xFF3B1816)
-val FernOnErrorContainer = Color(0xFFF9DADA)
-
-val FernScrim = Color(0xFF0A1412)
+// Activity Heatmap 6-Step Red-to-Green Scale
+val HeatmapLevel0Missed = Color(0xFFC94A38)       // 0 pts
+val HeatmapLevel1HeavyLazy = Color(0xFFDC7A68)    // 1 - 29 pts
+val HeatmapLevel2NearPass = Color(0xFFE8B4A8)     // 30 - 49 pts
+val HeatmapLevel3ActivePass = Color(0xFFB1D3B9)   // 50 - 69 pts
+val HeatmapLevel4StrongActive = Color(0xFF88BDA4) // 70 - 89 pts
+val HeatmapLevel5PeakTurbo = Color(0xFF2E6B53)    // 90+ pts
