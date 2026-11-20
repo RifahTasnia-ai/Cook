@@ -1,0 +1,388 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Profile</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#1B2E29',
+        'on-primary': '#F5FAF1',
+        'primary-container': '#DCEBD2',
+        'on-primary-container': '#1B2E29',
+        'secondary': '#659287',
+        'on-secondary': '#232322',
+        'secondary-container': '#88BDA4',
+        'on-secondary-container': '#1B2E29',
+        'surface': '#E6F2DD',
+        'surface-container-lowest': '#F5FAF1',
+        'surface-container-low': '#DCEBD2',
+        'surface-container': '#B1D3B9',
+        'surface-container-high': '#2B453E',
+        'on-surface': '#1B2E29',
+        'on-surface-variant': '#47665E',
+        'outline': '#47665E',
+        'outline-variant': '#B1D3B9',
+        'inverse-surface': '#1B2E29',
+        'inverse-on-surface': '#E6F2DD',
+        'inverse-primary': '#88BDA4',
+        'success': '#659287',
+        'on-success': '#232322',
+        'success-container': '#88BDA4',
+        'on-success-container': '#1B2E29',
+        'warning': '#C94A38',
+        'on-warning': '#FAFCF8',
+        'warning-container': '#F4DDD8',
+        'on-warning-container': '#A63A2B',
+        'error': '#A63A2B',
+        'on-error': '#F5FAF1',
+        'error-container': '#F4DDD8',
+        'on-error-container': '#A63A2B',
+        'scrim': '#1B2E29',
+        'heatmap-missed': '#C94A38',
+        'heatmap-low': '#DC7A68',
+        'heatmap-below': '#E8B4A8',
+        'heatmap-passed': '#B1D3B9',
+        'heatmap-strong': '#88BDA4',
+        'heatmap-peak': '#2E6B53',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto bg-surface px-gutter-xl py-gutter-xl flex flex-col gap-gutter-xl" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- 1. Minimal Top Bar -->
+    <header class="flex items-center justify-between gap-gutter-md">
+      <div class="flex items-center gap-gutter-md">
+        <button data-component-id="button-icon" data-component-type="button" data-component-variant="icon" type="button" aria-label="Back to Dashboard" class="w-11 h-11 rounded-full bg-surface-container text-on-surface flex items-center justify-center shrink-0 transition-colors duration-state-change ease-state-change hover:bg-secondary">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </button>
+        <h1 data-design-text-token="headline-md" class="font-headline text-headline-md text-on-surface">Activity Profile</h1>
+      </div>
+
+      <!-- Compact Timeframe Toggle Pill (90D / 1Y) -->
+      <div class="inline-flex items-center rounded-full bg-surface-container-lowest border border-outline-variant p-gutter-xs" role="group" aria-label="Timeframe">
+        <button id="tf-90d" type="button" class="px-gutter-md py-gutter-xs rounded-full bg-primary text-on-primary font-label text-label-sm tabular-nums">90D</button>
+        <button id="tf-1y" type="button" class="px-gutter-md py-gutter-xs rounded-full text-on-surface-variant font-label text-label-sm tabular-nums">1Y</button>
+      </div>
+    </header>
+
+    <main class="flex flex-col gap-gutter-md">
+      <!-- 2. Hero Card — Red-to-Green Activity Heatmap Grid -->
+      <section aria-label="Daily Activity Heatmap">
+        <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+          <header class="flex items-center justify-between gap-gutter-sm">
+            <h2 data-design-text-token="title-md" class="font-body text-title-md text-on-surface">Daily Activity</h2>
+            <span id="activity-counts" data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums">42 Active • 18 Red</span>
+          </header>
+
+          <!-- 7-Row Rounded-Square Daily Activity Matrix (12 weeks x 7 days) -->
+          <div id="heatmap-grid" class="grid grid-rows-7 grid-flow-col gap-gutter-xs" role="grid" aria-label="Daily activity matrix">
+            <!-- Week 1 -->
+            <button type="button" data-day="Sep 01 • 0.0 / 50 • Missed • 0 Audits" class="w-full aspect-square rounded-sm bg-heatmap-missed" aria-label="Sep 01: 0 pts"></button>
+            <button type="button" data-day="Sep 02 • 22.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Sep 02: 22 pts"></button>
+            <button type="button" data-day="Sep 03 • 38.5 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Sep 03: 38.5 pts"></button>
+            <button type="button" data-day="Sep 04 • 54.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 04: 54 pts"></button>
+            <button type="button" data-day="Sep 05 • 0.0 / 50 • Missed • 0 Audits" class="w-full aspect-square rounded-sm bg-heatmap-missed" aria-label="Sep 05: 0 pts"></button>
+            <button type="button" data-day="Sep 06 • 18.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Sep 06: 18 pts"></button>
+            <button type="button" data-day="Sep 07 • 44.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Sep 07: 44 pts"></button>
+            <!-- Week 2 -->
+            <button type="button" data-day="Sep 08 • 52.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 08: 52 pts"></button>
+            <button type="button" data-day="Sep 09 • 74.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Sep 09: 74 pts"></button>
+            <button type="button" data-day="Sep 10 • 61.5 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 10: 61.5 pts"></button>
+            <button type="button" data-day="Sep 11 • 35.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Sep 11: 35 pts"></button>
+            <button type="button" data-day="Sep 12 • 0.0 / 50 • Missed • 0 Audits" class="w-full aspect-square rounded-sm bg-heatmap-missed" aria-label="Sep 12: 0 pts"></button>
+            <button type="button" data-day="Sep 13 • 26.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Sep 13: 26 pts"></button>
+            <button type="button" data-day="Sep 14 • 58.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 14: 58 pts"></button>
+            <!-- Week 3 -->
+            <button type="button" data-day="Sep 15 • 72.5 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Sep 15: 72.5 pts"></button>
+            <button type="button" data-day="Sep 16 • 91.0 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Sep 16: 91 pts"></button>
+            <button type="button" data-day="Sep 17 • 66.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 17: 66 pts"></button>
+            <button type="button" data-day="Sep 18 • 41.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Sep 18: 41 pts"></button>
+            <button type="button" data-day="Sep 19 • 55.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 19: 55 pts"></button>
+            <button type="button" data-day="Sep 20 • 76.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Sep 20: 76 pts"></button>
+            <button type="button" data-day="Sep 21 • 24.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Sep 21: 24 pts"></button>
+            <!-- Week 4 -->
+            <button type="button" data-day="Sep 22 • 62.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 22: 62 pts"></button>
+            <button type="button" data-day="Sep 23 • 78.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Sep 23: 78 pts"></button>
+            <button type="button" data-day="Sep 24 • 94.0 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Sep 24: 94 pts"></button>
+            <button type="button" data-day="Sep 25 • 53.5 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 25: 53.5 pts"></button>
+            <button type="button" data-day="Sep 26 • 46.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Sep 26: 46 pts"></button>
+            <button type="button" data-day="Sep 27 • 0.0 / 50 • Missed • 0 Audits" class="w-full aspect-square rounded-sm bg-heatmap-missed" aria-label="Sep 27: 0 pts"></button>
+            <button type="button" data-day="Sep 28 • 59.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 28: 59 pts"></button>
+            <!-- Week 5 -->
+            <button type="button" data-day="Sep 29 • 68.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Sep 29: 68 pts"></button>
+            <button type="button" data-day="Sep 30 • 82.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Sep 30: 82 pts"></button>
+            <button type="button" data-day="Oct 01 • 71.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 01: 71 pts"></button>
+            <button type="button" data-day="Oct 02 • 51.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 02: 51 pts"></button>
+            <button type="button" data-day="Oct 03 • 33.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Oct 03: 33 pts"></button>
+            <button type="button" data-day="Oct 04 • 56.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 04: 56 pts"></button>
+            <button type="button" data-day="Oct 05 • 79.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 05: 79 pts"></button>
+            <!-- Week 6 -->
+            <button type="button" data-day="Oct 06 • 92.5 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Oct 06: 92.5 pts"></button>
+            <button type="button" data-day="Oct 07 • 63.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 07: 63 pts"></button>
+            <button type="button" data-day="Oct 08 • 42.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Oct 08: 42 pts"></button>
+            <button type="button" data-day="Oct 09 • 58.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 09: 58 pts"></button>
+            <button type="button" data-day="Oct 10 • 75.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 10: 75 pts"></button>
+            <button type="button" data-day="Oct 11 • 88.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 11: 88 pts"></button>
+            <button type="button" data-day="Oct 12 • 19.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Oct 12: 19 pts"></button>
+            <!-- Week 7 -->
+            <button type="button" data-day="Oct 13 • 54.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 13: 54 pts"></button>
+            <button type="button" data-day="Oct 14 • 77.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 14: 77 pts"></button>
+            <button type="button" data-day="Oct 15 • 95.0 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Oct 15: 95 pts"></button>
+            <button type="button" data-day="Oct 16 • 69.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 16: 69 pts"></button>
+            <button type="button" data-day="Oct 17 • 52.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 17: 52 pts"></button>
+            <button type="button" data-day="Oct 18 • 84.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 18: 84 pts"></button>
+            <button type="button" data-day="Oct 19 • 37.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Oct 19: 37 pts"></button>
+            <!-- Week 8 -->
+            <button type="button" data-day="Oct 20 • 60.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 20: 60 pts"></button>
+            <button type="button" data-day="Oct 21 • 73.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 21: 73 pts"></button>
+            <button type="button" data-day="Oct 22 • 90.5 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Oct 22: 90.5 pts"></button>
+            <button type="button" data-day="Oct 23 • 57.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 23: 57 pts"></button>
+            <button type="button" data-day="Oct 24 • 81.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 24: 81 pts"></button>
+            <button type="button" data-day="Oct 25 • 65.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 25: 65 pts"></button>
+            <button type="button" data-day="Oct 26 • 28.0 / 50 • Low • 1 Audit" class="w-full aspect-square rounded-sm bg-heatmap-low" aria-label="Oct 26: 28 pts"></button>
+            <!-- Week 9 -->
+            <button type="button" data-day="Oct 27 • 59.5 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 27: 59.5 pts"></button>
+            <button type="button" data-day="Oct 28 • 86.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 28: 86 pts"></button>
+            <button type="button" data-day="Oct 29 • 93.0 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Oct 29: 93 pts"></button>
+            <button type="button" data-day="Oct 30 • 67.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Oct 30: 67 pts"></button>
+            <button type="button" data-day="Oct 31 • 74.5 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Oct 31: 74.5 pts"></button>
+            <button type="button" data-day="Nov 01 • 48.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Nov 01: 48 pts"></button>
+            <button type="button" data-day="Nov 02 • 55.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 02: 55 pts"></button>
+            <!-- Week 10 -->
+            <button type="button" data-day="Nov 03 • 79.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 03: 79 pts"></button>
+            <button type="button" data-day="Nov 04 • 96.0 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Nov 04: 96 pts"></button>
+            <button type="button" data-day="Nov 05 • 62.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 05: 62 pts"></button>
+            <button type="button" data-day="Nov 06 • 83.5 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 06: 83.5 pts"></button>
+            <button type="button" data-day="Nov 07 • 54.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 07: 54 pts"></button>
+            <button type="button" data-day="Nov 08 • 91.5 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Nov 08: 91.5 pts"></button>
+            <button type="button" data-day="Nov 09 • 72.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 09: 72 pts"></button>
+            <!-- Week 11 -->
+            <button type="button" data-day="Nov 10 • 61.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 10: 61 pts"></button>
+            <button type="button" data-day="Nov 11 • 85.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 11: 85 pts"></button>
+            <button type="button" data-day="Nov 12 • 94.5 / 50 • Peak • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Nov 12: 94.5 pts"></button>
+            <button type="button" data-day="Nov 13 • 43.0 / 50 • Below • 2 Audits" class="w-full aspect-square rounded-sm bg-heatmap-below" aria-label="Nov 13: 43 pts"></button>
+            <button type="button" data-day="Nov 14 • 56.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 14: 56 pts"></button>
+            <button type="button" data-day="Nov 15 • 76.0 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 15: 76 pts"></button>
+            <button type="button" data-day="Nov 16 • 88.5 / 50 • Strong • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 16: 88.5 pts"></button>
+            <!-- Week 12 -->
+            <button type="button" data-day="Nov 17 • 52.0 / 50 • Active • S-1 Done" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 17: 52 pts"></button>
+            <button type="button" data-day="Nov 18 • 64.5 / 50 • Active • S-1 Done • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-passed ring-2 ring-primary" aria-label="Nov 18: 64.5 pts"></button>
+            <button type="button" data-day="Nov 19 • 79.0 / 50 • Strong • S-1 Done • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 19: 79 pts"></button>
+            <button type="button" data-day="Nov 20 • 54.0 / 50 • Active • S-1 Done • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 20: 54 pts"></button>
+            <button type="button" data-day="Nov 21 • 92.0 / 50 • Peak • S-1 Done • 5 Audits" class="w-full aspect-square rounded-sm bg-heatmap-peak" aria-label="Nov 21: 92 pts"></button>
+            <button type="button" data-day="Nov 22 • 68.5 / 50 • Active • S-1 Done • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-passed" aria-label="Nov 22: 68.5 pts"></button>
+            <button type="button" data-day="Nov 23 • 84.0 / 50 • Strong • S-1 Done • 4 Audits" class="w-full aspect-square rounded-sm bg-heatmap-strong" aria-label="Nov 23: 84 pts"></button>
+          </div>
+
+          <!-- Compact Red-to-Green Legend -->
+          <div class="flex items-center justify-between gap-gutter-sm pt-gutter-xs">
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Lazy</span>
+            <div class="flex items-center gap-gutter-xs" aria-hidden="true">
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-missed"></span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-low"></span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-below"></span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-passed"></span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-strong"></span>
+              <span class="w-3.5 h-3.5 rounded-sm bg-heatmap-peak"></span>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Active</span>
+          </div>
+
+          <!-- Tapped Day Strip (Recessed #0A1412 Pill) -->
+          <div class="rounded-full bg-surface px-gutter-lg py-gutter-sm text-center">
+            <p id="tapped-day-strip" data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums">
+              Nov 18 • 64.5 / 50 • Active • S-1 Done • 4 Audits
+            </p>
+          </div>
+        </article>
+      </section>
+
+      <!-- 3. Compact 2x2 Activity Summary Tiles (16pt corners, 12pt gap) -->
+      <section aria-label="Activity Summary" class="grid grid-cols-2 gap-gutter-md">
+        <div class="rounded-lg bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Active Streak</span>
+          <span data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface tabular-nums">6 Days</span>
+        </div>
+
+        <div class="rounded-lg bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Pass Rate (&gt;= 50 pts)</span>
+          <span data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface tabular-nums">70%</span>
+        </div>
+
+        <div class="rounded-lg bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Red vs. Green</span>
+          <span data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface tabular-nums">18 / 42</span>
+        </div>
+
+        <div class="rounded-lg bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Avg Score</span>
+          <span data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface tabular-nums">58.4</span>
+        </div>
+      </section>
+
+      <!-- 4. Recent Days Activity Log (Compact Borderless List inside #17322E card) -->
+      <section aria-label="Recent Days Activity Log">
+        <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+          <h2 data-design-text-token="title-md" class="font-body text-title-md text-on-surface">Recent Days</h2>
+
+          <div class="flex flex-col gap-gutter-md">
+            <div class="flex items-center justify-between gap-gutter-md">
+              <div class="flex items-center gap-gutter-sm min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-heatmap-passed shrink-0" aria-hidden="true"></span>
+                <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Today</span>
+              </div>
+              <div class="flex items-center gap-gutter-lg shrink-0">
+                <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant tabular-nums">4h 45m</span>
+                <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums">54.0 / 50</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-gutter-md">
+              <div class="flex items-center gap-gutter-sm min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-heatmap-strong shrink-0" aria-hidden="true"></span>
+                <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Yesterday</span>
+              </div>
+              <div class="flex items-center gap-gutter-lg shrink-0">
+                <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant tabular-nums">5h 20m</span>
+                <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums">79.0 / 50</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-gutter-md">
+              <div class="flex items-center gap-gutter-sm min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-heatmap-passed shrink-0" aria-hidden="true"></span>
+                <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Nov 18</span>
+              </div>
+              <div class="flex items-center gap-gutter-lg shrink-0">
+                <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant tabular-nums">4h 15m</span>
+                <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums">64.5 / 50</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-gutter-md">
+              <div class="flex items-center gap-gutter-sm min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-heatmap-below shrink-0" aria-hidden="true"></span>
+                <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Nov 17</span>
+              </div>
+              <div class="flex items-center gap-gutter-lg shrink-0">
+                <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant tabular-nums">2h 30m</span>
+                <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums">43.0 / 50</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-gutter-md">
+              <div class="flex items-center gap-gutter-sm min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-heatmap-peak shrink-0" aria-hidden="true"></span>
+                <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Nov 16</span>
+              </div>
+              <div class="flex items-center gap-gutter-lg shrink-0">
+                <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant tabular-nums">6h 10m</span>
+                <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums">92.0 / 50</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const strip = document.getElementById('tapped-day-strip');
+    const cells = document.querySelectorAll('#heatmap-grid [data-day]');
+    cells.forEach((cell) => {
+      cell.addEventListener('click', () => {
+        cells.forEach((c) => c.classList.remove('ring-2', 'ring-primary'));
+        cell.classList.add('ring-2', 'ring-primary');
+        strip.textContent = cell.dataset.day;
+      });
+    });
+
+    const tf90 = document.getElementById('tf-90d');
+    const tf1y = document.getElementById('tf-1y');
+    const counts = document.getElementById('activity-counts');
+    tf90.addEventListener('click', () => {
+      tf90.classList.add('bg-primary', 'text-on-primary');
+      tf90.classList.remove('text-on-surface-variant');
+      tf1y.classList.remove('bg-primary', 'text-on-primary');
+      tf1y.classList.add('text-on-surface-variant');
+      counts.textContent = '42 Active • 18 Red';
+    });
+    tf1y.addEventListener('click', () => {
+      tf1y.classList.add('bg-primary', 'text-on-primary');
+      tf1y.classList.remove('text-on-surface-variant');
+      tf90.classList.remove('bg-primary', 'text-on-primary');
+      tf90.classList.add('text-on-surface-variant');
+      counts.textContent = '214 Active • 78 Red';
+    });
+  </script>
+
+
+</body></html>
