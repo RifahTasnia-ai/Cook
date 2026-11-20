@@ -187,7 +187,7 @@ fun StartTimeBlockSheetOverlay(
                                 color = if (isSelected) MaterialTheme.colorScheme.secondary else turboColors.containerFill,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(min = 56.dp)
+                                    .heightIn(min = 58.dp)
                                     .then(
                                         if (isSelected) {
                                             Modifier.border(
@@ -199,7 +199,7 @@ fun StartTimeBlockSheetOverlay(
                                             Modifier
                                         }
                                     )
-                                    .testTag("block_task_option_${item.badge}")
+                                    .testTag("block_task_option_${item.task.id}")
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -208,22 +208,10 @@ fun StartTimeBlockSheetOverlay(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
+                                    Column(
                                         modifier = Modifier.weight(1f),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
-                                        Surface(
-                                            shape = CircleShape,
-                                            color = if (isS) MaterialTheme.colorScheme.primary else turboColors.elevatedCard
-                                        ) {
-                                            Text(
-                                                text = item.badge,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = if (isS) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                                            )
-                                        }
                                         Text(
                                             text = item.task.title,
                                             style = if (isS) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
@@ -231,8 +219,13 @@ fun StartTimeBlockSheetOverlay(
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis
                                         )
+                                        Text(
+                                            text = item.sectionTitle,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = if (isS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Text(
                                         text = item.multiplierLabel,
                                         style = MaterialTheme.typography.labelSmall,

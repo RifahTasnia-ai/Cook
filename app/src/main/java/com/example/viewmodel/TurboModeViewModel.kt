@@ -5,17 +5,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.CheckInRecord
 import com.example.data.DailyLog
-import com.example.data.DailySevenPointCatalog
 import com.example.data.DayState
 import com.example.data.DisplayTaskItem
 import com.example.data.PriorityTask
 import com.example.data.PriorityTier
+import com.example.data.TimeBlockRecord
+import com.example.data.TurboDataSource
 import com.example.data.TurboRepository
+import com.example.data.TestTurboRepository
 import com.example.data.buildDisplayTasks
 import com.example.data.currentTimeHhMm
-import com.example.data.formatMmSs
 import com.example.data.todayDateKey
+import com.example.notifications.AuditAlarmScheduler
 import com.example.notifications.TurboNotificationManager
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.CancellationException
@@ -47,7 +50,8 @@ data class ActiveBlockSession(
     val task: DisplayTaskItem,
     val startTimeLabel: String,
     val totalSeconds: Int,
-    val remainingSeconds: Int
+    val remainingSeconds: Int,
+    val endEpochMillis: Long
 ) {
     val elapsedSeconds: Int get() = (totalSeconds - remainingSeconds).coerceAtLeast(0)
     val progressFraction: Float
@@ -73,9 +77,18 @@ data class CheckInSession(
     val nodeIndex: Int,
     val startedAtLabel: String,
     val elapsedSeconds: Int = 0,
-    val currentStep: Int = 0, // 0..3
-    val answers: List<String> = listOf("", "", "", "")
-)
+    val currentStep: Int = 0, // 0..2 (3 core questions)
+    val answers: List<String> = listOf("", "", "")
+) {
+    val currentAnswerTrimmedLength: Int
+        get() = answers.getOrElse(currentStep) { "" }.trim().length
+
+    val isCurrentAnswerValid: Boolean
+        get() = currentAnswerTrimmedLength >= TurboRepository.MIN_CHECKIN_ANSWER_LENGTH
+
+    val allAnswersValid: Boolean
+        get() = answers.size == 3 && answers.all { it.trim().length >= TurboRepository.MIN_CHECKIN_ANSWER_LENGTH }
+}
 
 data class TurboUiState(
     val isLoading: Boolean = true,
@@ -87,7 +100,8 @@ data class TurboUiState(
     val tasks: List<PriorityTask> = emptyList(),
     val displayTasks: List<DisplayTaskItem> = emptyList(),
     val dailyLog: DailyLog = DailyLog(),
-    val auditCountdownSeconds: Long = 3L * 3600L,
+    val todayTimeBlocks: List<TimeBlockRecord> = emptyList(),
+    val todayCheckIns: List<CheckInRecord> = emptyList(),
     // Start Block Sheet state
     val selectedTaskIdForBlock: String? = null,
     val blockStartTimeLabel: String = currentTimeHhMm(),
@@ -100,23 +114,26 @@ data class TurboUiState(
     val evaluationDraft: EvaluationDraft? = null,
     // 121-second silence reset
     val silenceRemainingSeconds: Int = 121,
+    val silenceEndEpochMillis: Long = 0L,
     val showEarlyExitDialog: Boolean = false,
-    // 3-hour audit & 7-point check-in
+    // 3-hour audit & 3-question check-in
     val pendingAuditNodeIndex: Int = 1,
     val checkInSession: CheckInSession? = null,
-    // Add task modal
-    val showAddTaskDialog: Boolean = false
+    // Modals
+    val showAddTaskDialog: Boolean = false,
+    val showScoreReport: Boolean = false
 )
 
 class TurboModeViewModel(
     application: Application,
-    private val repository: TurboRepository
+    private val repository: TurboDataSource
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(TurboUiState())
     val uiState: StateFlow<TurboUiState> = _uiState.asStateFlow()
 
     private var tickerJob: Job? = null
+    private var lastAutoTriggeredAuditEpoch: Long = 0L
 
     init {
         val dateKey = todayDateKey()
@@ -131,9 +148,16 @@ class TurboModeViewModel(
         viewModelScope.launch {
             combine(
                 repository.observeTasks(),
-                repository.observeDailyLog(dateKey)
-            ) { tasks, log ->
-                tasks to (log ?: DailyLog(dateKey = dateKey))
+                repository.observeDailyLog(dateKey),
+                repository.observeTodayTimeBlocks(dateKey),
+                repository.observeTodayCheckIns(dateKey)
+            ) { tasks, log, blocks, checkIns ->
+                FirestoreBundle(
+                    tasks = tasks,
+                    log = log ?: DailyLog(dateKey = dateKey),
+                    blocks = blocks,
+                    checkIns = checkIns
+                )
             }
                 .catch { error ->
                     val firestoreError = generateSequence(error) { it.cause }
@@ -148,19 +172,26 @@ class TurboModeViewModel(
                         )
                     }
                 }
-                .collect { (tasks, log) ->
-                    val display = buildDisplayTasks(tasks)
-                    val remainingAudit = ((log.nextAuditEpochMillis - System.currentTimeMillis()) / 1000L)
-                        .coerceAtLeast(0L)
+                .collect { bundle ->
+                    val display = buildDisplayTasks(bundle.tasks)
+                    if (bundle.log.dayStateEnum() == DayState.WAKE_UP) {
+                        AuditAlarmScheduler.scheduleNextAudit(
+                            context = getApplication(),
+                            triggerAtMillis = bundle.log.nextAuditEpochMillis
+                        )
+                    } else {
+                        AuditAlarmScheduler.cancelAudit(getApplication())
+                    }
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
                             errorMessage = null,
-                            tasks = tasks,
+                            tasks = bundle.tasks,
                             displayTasks = display,
-                            dailyLog = log,
-                            auditCountdownSeconds = remainingAudit,
-                            pendingAuditNodeIndex = log.activeNodeIndex()
+                            dailyLog = bundle.log,
+                            todayTimeBlocks = bundle.blocks,
+                            todayCheckIns = bundle.checkIns,
+                            pendingAuditNodeIndex = bundle.log.nextCheckInSlot()
                         )
                     }
                 }
@@ -172,9 +203,8 @@ class TurboModeViewModel(
         tickerJob = viewModelScope.launch {
             while (true) {
                 delay(1000L)
+                val now = System.currentTimeMillis()
                 val state = _uiState.value
-                val nextAuditSec = ((state.dailyLog.nextAuditEpochMillis - System.currentTimeMillis()) / 1000L)
-                    .coerceAtLeast(0L)
 
                 var updatedBlock = state.activeBlock
                 var updatedSilence = state.silenceRemainingSeconds
@@ -183,7 +213,7 @@ class TurboModeViewModel(
                 var nextEval = state.evaluationDraft
 
                 if (state.destination == TurboDestination.ActiveTimeBlock && updatedBlock != null) {
-                    val nextRem = (updatedBlock.remainingSeconds - 1).coerceAtLeast(0)
+                    val nextRem = ceil((updatedBlock.endEpochMillis - now) / 1000.0).toInt().coerceAtLeast(0)
                     updatedBlock = updatedBlock.copy(remainingSeconds = nextRem)
                     if (nextRem == 0) {
                         TurboNotificationManager.cancelActiveBlock(getApplication())
@@ -196,25 +226,20 @@ class TurboModeViewModel(
                     } else if (nextRem % 15 == 0) {
                         TurboNotificationManager.postActiveBlockNotification(
                             context = getApplication(),
-                            badge = updatedBlock.task.badge,
-                            title = updatedBlock.task.task.title,
-                            remainingFormatted = formatMmSs(nextRem),
+                            tierTitle = updatedBlock.task.sectionTitle,
+                            taskTitle = updatedBlock.task.task.title,
+                            endEpochMillis = updatedBlock.endEpochMillis,
                             progressPercent = (updatedBlock.progressFraction * 100f).toInt()
                         )
                     }
                 }
 
-                if (state.destination == TurboDestination.SilenceReset) {
-                    val nextRem = (updatedSilence - 1).coerceAtLeast(0)
+                if (state.destination == TurboDestination.SilenceReset && state.silenceEndEpochMillis > 0L) {
+                    val nextRem = ceil((state.silenceEndEpochMillis - now) / 1000.0).toInt().coerceAtLeast(0)
                     updatedSilence = nextRem
                     if (nextRem == 0) {
                         TurboNotificationManager.cancelSilenceReset(getApplication())
                         nextDestination = TurboDestination.Dashboard
-                    } else if (nextRem % 15 == 0) {
-                        TurboNotificationManager.postSilenceResetNotification(
-                            context = getApplication(),
-                            remainingFormatted = formatMmSs(nextRem)
-                        )
                     }
                 }
 
@@ -222,9 +247,21 @@ class TurboModeViewModel(
                     updatedCheckIn = updatedCheckIn.copy(elapsedSeconds = updatedCheckIn.elapsedSeconds + 1)
                 }
 
+                // Automatic foreground 3-hour interruption when WAKE_UP is active and countdown elapses
+                if (nextDestination == TurboDestination.Dashboard &&
+                    !state.isLoading &&
+                    state.dailyLog.dayStateEnum() == DayState.WAKE_UP &&
+                    state.dailyLog.nextAuditEpochMillis > 0L &&
+                    now >= state.dailyLog.nextAuditEpochMillis &&
+                    lastAutoTriggeredAuditEpoch != state.dailyLog.nextAuditEpochMillis
+                ) {
+                    lastAutoTriggeredAuditEpoch = state.dailyLog.nextAuditEpochMillis
+                    TurboNotificationManager.postAuditNotification(getApplication())
+                    nextDestination = TurboDestination.IncomingCallAudit
+                }
+
                 _uiState.update {
                     it.copy(
-                        auditCountdownSeconds = nextAuditSec,
                         activeBlock = updatedBlock,
                         silenceRemainingSeconds = updatedSilence,
                         checkInSession = updatedCheckIn,
@@ -236,10 +273,33 @@ class TurboModeViewModel(
         }
     }
 
-    // --- Dashboard & Task Queue ---
+    fun repostActiveNotificationsIfNeeded() {
+        val state = _uiState.value
+        val active = state.activeBlock
+        if (state.destination == TurboDestination.ActiveTimeBlock && active != null) {
+            TurboNotificationManager.postActiveBlockNotification(
+                context = getApplication(),
+                tierTitle = active.task.sectionTitle,
+                taskTitle = active.task.task.title,
+                endEpochMillis = active.endEpochMillis,
+                progressPercent = (active.progressFraction * 100f).toInt()
+            )
+        } else if (state.destination == TurboDestination.SilenceReset && state.silenceEndEpochMillis > System.currentTimeMillis()) {
+            TurboNotificationManager.postSilenceResetNotification(
+                context = getApplication(),
+                endEpochMillis = state.silenceEndEpochMillis
+            )
+        }
+    }
+
+    // --- Dashboard, Modals & Task Queue ---
 
     fun setAddTaskDialogVisible(visible: Boolean) {
         _uiState.update { it.copy(showAddTaskDialog = visible) }
+    }
+
+    fun setScoreReportVisible(visible: Boolean) {
+        _uiState.update { it.copy(showScoreReport = visible) }
     }
 
     fun addTask(title: String, tier: PriorityTier) {
@@ -251,7 +311,7 @@ class TurboModeViewModel(
                     isBusy = false,
                     showAddTaskDialog = if (result.isSuccess) false else state.showAddTaskDialog,
                     errorMessage = result.exceptionOrNull()?.localizedMessage,
-                    statusToast = if (result.isSuccess) "Task added to ${tier.code} tier" else null
+                    statusToast = if (result.isSuccess) "Added to ${tier.sectionTitle}" else null
                 )
             }
         }
@@ -287,7 +347,7 @@ class TurboModeViewModel(
                 it.copy(
                     isBusy = false,
                     errorMessage = result.exceptionOrNull()?.localizedMessage,
-                    statusToast = if (result.isSuccess) "Loaded sample Turbo Mode queue" else null
+                    statusToast = if (result.isSuccess) "Loaded sample priority queue" else null
                 )
             }
         }
@@ -346,17 +406,19 @@ class TurboModeViewModel(
             ?: return
         val durationMin = state.selectedDurationMinutes.coerceIn(1, 240)
         val totalSec = durationMin * 60
+        val endMillis = System.currentTimeMillis() + totalSec * 1000L
         val session = ActiveBlockSession(
             task = selected,
             startTimeLabel = state.blockStartTimeLabel,
             totalSeconds = totalSec,
-            remainingSeconds = totalSec
+            remainingSeconds = totalSec,
+            endEpochMillis = endMillis
         )
         TurboNotificationManager.postActiveBlockNotification(
             context = getApplication(),
-            badge = selected.badge,
-            title = selected.task.title,
-            remainingFormatted = formatMmSs(totalSec),
+            tierTitle = selected.sectionTitle,
+            taskTitle = selected.task.title,
+            endEpochMillis = endMillis,
             progressPercent = 0
         )
         _uiState.update {
@@ -417,9 +479,10 @@ class TurboModeViewModel(
                 actionRate = draft.actionRate
             )
             if (result.isSuccess) {
+                val silenceEndMillis = System.currentTimeMillis() + 121_000L
                 TurboNotificationManager.postSilenceResetNotification(
                     context = getApplication(),
-                    remainingFormatted = formatMmSs(121)
+                    endEpochMillis = silenceEndMillis
                 )
                 _uiState.update {
                     it.copy(
@@ -427,6 +490,7 @@ class TurboModeViewModel(
                         activeBlock = null,
                         evaluationDraft = null,
                         silenceRemainingSeconds = 121,
+                        silenceEndEpochMillis = silenceEndMillis,
                         showEarlyExitDialog = false,
                         destination = TurboDestination.SilenceReset
                     )
@@ -452,6 +516,7 @@ class TurboModeViewModel(
         TurboNotificationManager.cancelSilenceReset(getApplication())
         _uiState.update {
             it.copy(
+                silenceEndEpochMillis = 0L,
                 showEarlyExitDialog = false,
                 destination = TurboDestination.Dashboard,
                 statusToast = "Silence reset ended early"
@@ -459,30 +524,30 @@ class TurboModeViewModel(
         }
     }
 
-    // --- Screen 6 & 7: 3-Hour Incoming Call & 7-Point Check-In ---
+    // --- Screen 6 & 7: 3-Hour Incoming Call & 3-Question Check-In ---
 
-    fun triggerIncomingAuditCall(nodeIndex: Int = _uiState.value.dailyLog.activeNodeIndex()) {
-        val clamped = nodeIndex.coerceIn(1, 7)
-        val spec = DailySevenPointCatalog.forNode(clamped)
-        TurboNotificationManager.postAuditNotification(getApplication(), spec.shortTitle)
+    fun triggerIncomingAuditCall() {
+        val slot = _uiState.value.dailyLog.nextCheckInSlot()
+        TurboNotificationManager.postAuditNotification(getApplication())
         _uiState.update {
             it.copy(
-                pendingAuditNodeIndex = clamped,
+                pendingAuditNodeIndex = slot,
                 destination = TurboDestination.IncomingCallAudit
             )
         }
     }
 
     fun answerAuditCall() {
-        val node = _uiState.value.pendingAuditNodeIndex.coerceIn(1, 7)
+        TurboNotificationManager.cancelAudit(getApplication())
+        val slot = _uiState.value.pendingAuditNodeIndex.coerceIn(1, 7)
         _uiState.update {
             it.copy(
                 checkInSession = CheckInSession(
-                    nodeIndex = node,
+                    nodeIndex = slot,
                     startedAtLabel = currentTimeHhMm(),
                     elapsedSeconds = 0,
                     currentStep = 0,
-                    answers = listOf("", "", "", "")
+                    answers = listOf("", "", "")
                 ),
                 destination = TurboDestination.SevenPointCheckIn
             )
@@ -511,9 +576,23 @@ class TurboModeViewModel(
 
     fun nextOrSubmitCheckIn() {
         val session = _uiState.value.checkInSession ?: return
-        if (session.currentStep < 3) {
+        if (!session.isCurrentAnswerValid) {
+            _uiState.update {
+                it.copy(
+                    statusToast = "Write at least ${TurboRepository.MIN_CHECKIN_ANSWER_LENGTH} characters before continuing"
+                )
+            }
+            return
+        }
+        if (session.currentStep < 2) {
             _uiState.update {
                 it.copy(checkInSession = session.copy(currentStep = session.currentStep + 1))
+            }
+            return
+        }
+        if (!session.allAnswersValid) {
+            _uiState.update {
+                it.copy(statusToast = "Complete all 3 questions to log your check-in")
             }
             return
         }
@@ -525,16 +604,18 @@ class TurboModeViewModel(
                 creativeIq = session.answers[0],
                 emotionEq = session.answers[1],
                 bestThinking = session.answers[2],
-                dailySevenPoint = session.answers[3],
                 durationSeconds = session.elapsedSeconds
             )
+            result.onSuccess { nextAuditEpoch ->
+                AuditAlarmScheduler.scheduleNextAudit(getApplication(), nextAuditEpoch)
+            }
             _uiState.update { state ->
                 if (result.isSuccess) {
                     state.copy(
                         isBusy = false,
                         checkInSession = null,
                         destination = TurboDestination.Dashboard,
-                        statusToast = "Time ${session.nodeIndex} logged (+5 pts)"
+                        statusToast = "3-hour audit logged (+5 pts)"
                     )
                 } else {
                     state.copy(
@@ -565,6 +646,9 @@ class TurboModeViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isBusy = true) }
             val result = repository.updateDayState(_uiState.value.dateKey, DayState.SLEEP)
+            if (result.isSuccess) {
+                AuditAlarmScheduler.cancelAudit(getApplication())
+            }
             _uiState.update {
                 it.copy(
                     isBusy = false,
@@ -580,12 +664,15 @@ class TurboModeViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isBusy = true) }
             val result = repository.updateDayState(_uiState.value.dateKey, DayState.WAKE_UP)
+            result.onSuccess { nextAuditEpoch ->
+                AuditAlarmScheduler.scheduleNextAudit(getApplication(), nextAuditEpoch)
+            }
             _uiState.update {
                 it.copy(
                     isBusy = false,
                     destination = TurboDestination.Dashboard,
                     errorMessage = result.exceptionOrNull()?.localizedMessage,
-                    statusToast = if (result.isSuccess) "Wake-Up active — 3-hour audit engine started" else null
+                    statusToast = if (result.isSuccess) "Wake-Up active — 3-hour audit scheduled" else null
                 )
             }
         }
@@ -618,9 +705,16 @@ class TurboModeViewModel(
                     openStartBlockSheet()
                 }
             }
+            TurboNotificationManager.ACTION_OPEN_SILENCE -> {
+                if (_uiState.value.silenceEndEpochMillis > System.currentTimeMillis()) {
+                    _uiState.update { it.copy(destination = TurboDestination.SilenceReset) }
+                } else {
+                    returnToDashboard()
+                }
+            }
             TurboNotificationManager.ACTION_START_DAY -> {
                 wakeUpDay()
-                triggerIncomingAuditCall(1)
+                triggerIncomingAuditCall()
             }
         }
     }
@@ -629,12 +723,25 @@ class TurboModeViewModel(
         _uiState.update { it.copy(errorMessage = null, statusToast = null) }
     }
 
+    private data class FirestoreBundle(
+        val tasks: List<PriorityTask>,
+        val log: DailyLog,
+        val blocks: List<TimeBlockRecord>,
+        val checkIns: List<CheckInRecord>
+    )
+
     class Factory(
-        private val application: Application
+        private val application: Application,
+        private val isTestMode: Boolean = false
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return TurboModeViewModel(application, TurboRepository(application)) as T
+            val dataSource: TurboDataSource = if (isTestMode) {
+                TestTurboRepository()
+            } else {
+                TurboRepository(application)
+            }
+            return TurboModeViewModel(application, dataSource) as T
         }
     }
 }

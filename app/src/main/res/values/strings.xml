@@ -2,6 +2,7 @@
     <string name="app_name">Turbo Mode</string>
     <string name="auth_subtitle">Deliberate execution, weighted scoring, and 3-hour reflection audits synced to your account.</string>
     <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="enter_test_mode">Enter Test Mode</string>
     <string name="sign_out_cd">Sign out</string>
     <string name="notifications_center_cd">Notifications and lock-screen preview</string>
     <string name="add_task_cd">Add priority task</string>
@@ -13,4 +14,7 @@
     <string name="laziness_zone">Laziness Zone</string>
     <string name="wake_up">Wake-Up</string>
     <string name="sleep">Sleep</string>
+    <string name="score_calculation_report">Score Calculation Report</string>
+    <string name="view_calculation_report">View calculation report</string>
+    <string name="three_hour_audit_subtitle">3-Hour Accountability Check-In</string>
 </resources>

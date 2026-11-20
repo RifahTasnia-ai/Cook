@@ -60,12 +60,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.data.DailySevenPointCatalog
+import com.example.R
+import com.example.data.TurboRepository
 import com.example.data.formatMmSs
 import com.example.ui.theme.LocalTurboColors
 import com.example.viewmodel.CheckInSession
@@ -220,14 +222,10 @@ fun SilenceResetScreen(
  */
 @Composable
 fun IncomingCallAuditScreen(
-    nodeIndex: Int,
     onAnswer: () -> Unit
 ) {
     // Strictly mandatory audit interruption: no decline/dismiss/snooze
     BackHandler(enabled = true) { /* Slide to answer required */ }
-
-    val turboColors = LocalTurboColors.current
-    val spec = DailySevenPointCatalog.forNode(nodeIndex)
 
     val infiniteTransition = rememberInfiniteTransition(label = "audit_ring_pulse")
     val pulseScale by infiniteTransition.animateFloat(
@@ -319,7 +317,7 @@ fun IncomingCallAuditScreen(
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = spec.shortTitle,
+                        text = stringResource(R.string.three_hour_audit_subtitle),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -412,7 +410,7 @@ private fun SlideToAnswerControl(
 }
 
 /**
- * Screen 7: 3-Hour Check-In & Daily 7-Point Questionnaire — Conversational card-stack reflection sheet.
+ * Screen 7: 3-Hour Check-In — Strictly validated 3-question reflection flow (Creative IQ, Emotion EQ, Best Thinking).
  */
 @Composable
 fun SevenPointCheckInScreen(
@@ -429,19 +427,20 @@ fun SevenPointCheckInScreen(
     }
 
     val turboColors = LocalTurboColors.current
-    val sevenPointSpec = DailySevenPointCatalog.forNode(session.nodeIndex)
-
-    val steps = remember(session.nodeIndex) {
+    val steps = remember {
         listOf(
-            "Step 1 of 4 • Creative IQ" to "A. Did you use Creative IQ?",
-            "Step 2 of 4 • Emotion EQ" to "B. What Emotion EQ?",
-            "Step 3 of 4 • Best Thinking" to "C. What is your best Thinking?",
-            "Step 4 of 4 • Daily 7-Point" to sevenPointSpec.fullPrompt
+            "Step 1 of 3 • Creative IQ" to "Did you use Creative IQ?",
+            "Step 2 of 3 • Emotion EQ" to "What Emotion EQ?",
+            "Step 3 of 3 • Best Thinking" to "What is your best Thinking?"
         )
     }
-    val (eyebrow, promptText) = steps[session.currentStep.coerceIn(0, 3)]
-    val currentText = session.answers.getOrElse(session.currentStep) { "" }
-    val isFinalStep = session.currentStep == 3
+    val stepIndex = session.currentStep.coerceIn(0, 2)
+    val (eyebrow, promptText) = steps[stepIndex]
+    val currentText = session.answers.getOrElse(stepIndex) { "" }
+    val isFinalStep = stepIndex == 2
+    val minLen = TurboRepository.MIN_CHECKIN_ANSWER_LENGTH
+    val trimmedLen = session.currentAnswerTrimmedLength
+    val canProceed = !isBusy && session.isCurrentAnswerValid && (!isFinalStep || session.allAnswersValid)
 
     Box(
         modifier = Modifier
@@ -479,7 +478,7 @@ fun SevenPointCheckInScreen(
                             .background(MaterialTheme.colorScheme.secondary)
                     )
                     Text(
-                        text = "Recording Block • ${session.startedAtLabel} • ${formatMmSs(session.elapsedSeconds)}",
+                        text = "3-Hour Audit • ${session.startedAtLabel} • ${formatMmSs(session.elapsedSeconds)}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -511,7 +510,7 @@ fun SevenPointCheckInScreen(
                     shadowElevation = 12.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 400.dp)
+                        .heightIn(min = 380.dp)
                         .border(1.dp, turboColors.hairlineBorder, RoundedCornerShape(24.dp))
                 ) {
                     Column(
@@ -520,20 +519,20 @@ fun SevenPointCheckInScreen(
                             .padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        // 4-Step Progress Pill Bar
+                        // 3-Step Progress Pill Bar
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                for (idx in 0..3) {
+                                for (idx in 0..2) {
                                     Box(
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(6.dp)
                                             .clip(CircleShape)
                                             .background(
-                                                if (idx <= session.currentStep) MaterialTheme.colorScheme.secondary
+                                                if (idx <= stepIndex) MaterialTheme.colorScheme.secondary
                                                 else turboColors.containerFill
                                             )
                                     )
@@ -559,7 +558,7 @@ fun SevenPointCheckInScreen(
 
                         // Single Editorial Prompt + Completely Borderless Writing Canvas
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
@@ -571,11 +570,11 @@ fun SevenPointCheckInScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(min = 160.dp)
+                                    .heightIn(min = 150.dp)
                             ) {
                                 if (currentText.isEmpty()) {
                                     Text(
-                                        text = "Begin writing freely...",
+                                        text = "Write a specific, honest reflection...",
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
@@ -589,10 +588,26 @@ fun SevenPointCheckInScreen(
                                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .heightIn(min = 160.dp)
+                                        .heightIn(min = 150.dp)
                                         .testTag("reflection_canvas_input")
                                 )
                             }
+
+                            // Quiet Inline Validation Guard
+                            Text(
+                                text = if (session.isCurrentAnswerValid) {
+                                    if (isFinalStep) "All 3 answers complete" else "Answer recorded"
+                                } else {
+                                    "Write at least $minLen characters to continue ($trimmedLen/$minLen)"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (session.isCurrentAnswerValid) {
+                                    MaterialTheme.colorScheme.secondary
+                                } else {
+                                    turboColors.warning
+                                },
+                                modifier = Modifier.testTag("checkin_validation_hint")
+                            )
                         }
                     }
                 }
@@ -608,7 +623,7 @@ fun SevenPointCheckInScreen(
             ) {
                 IconButton(
                     onClick = onPreviousStep,
-                    enabled = session.currentStep > 0 && !isBusy,
+                    enabled = stepIndex > 0 && !isBusy,
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
@@ -618,18 +633,20 @@ fun SevenPointCheckInScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Previous prompt",
-                        tint = if (session.currentStep > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                        tint = if (stepIndex > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                         modifier = Modifier.size(20.dp)
                     )
                 }
 
                 Button(
                     onClick = onNextOrSubmit,
-                    enabled = !isBusy,
+                    enabled = canProceed,
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = turboColors.containerFill,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier
                         .weight(1f)

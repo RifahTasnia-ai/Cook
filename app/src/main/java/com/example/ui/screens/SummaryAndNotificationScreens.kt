@@ -60,40 +60,38 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.DailyLog
-import com.example.data.DailySevenPointCatalog
 import com.example.data.currentDateSubtitle
 import com.example.data.currentTimeHhMm
 import com.example.data.formatMmSs
+import com.example.data.formatScoreValue
 import com.example.data.formatTrackedDuration
 import com.example.notifications.TurboNotificationManager
 import com.example.ui.theme.LocalTurboColors
 import com.example.viewmodel.TurboUiState
-import kotlin.math.roundToInt
 
 /**
- * Screen 8: End-of-Day Summary — Refined bento scorecard modal over frosted scrim.
+ * Screen 8: End-of-Day Summary — Refined 0-100 bento scorecard modal over frosted scrim.
  */
 @Composable
 fun EndOfDaySummaryOverlay(
     dailyLog: DailyLog,
     isBusy: Boolean,
     onDismiss: () -> Unit,
+    onOpenScoreReport: () -> Unit,
     onCloseDay: () -> Unit
 ) {
     BackHandler(onBack = onDismiss)
 
     val turboColors = LocalTurboColors.current
     val passed = dailyLog.totalScore >= 50.0
-    val scoreDisplay = if (dailyLog.totalScore % 1.0 == 0.0) {
-        dailyLog.totalScore.roundToInt().toString()
-    } else {
-        String.format("%.1f", dailyLog.totalScore)
-    }
+    val scoreDisplay = formatScoreValue(dailyLog.totalScore)
 
     Box(
         modifier = Modifier
@@ -117,7 +115,7 @@ fun EndOfDaySummaryOverlay(
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -142,11 +140,11 @@ fun EndOfDaySummaryOverlay(
                     }
                 }
 
-                // Hero Sculptural Score Centerpiece
+                // Hero Sculptural 0-100 Score Centerpiece
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
@@ -156,7 +154,7 @@ fun EndOfDaySummaryOverlay(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "/ 50 pass mark",
+                        text = "/ 100 · 50 pass mark",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -169,12 +167,12 @@ fun EndOfDaySummaryOverlay(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         SummaryMetricTile(
-                            label = "S-1 Completed",
+                            label = "Most Critical",
                             value = "${dailyLog.s1CompletedCount}/1",
                             modifier = Modifier.weight(1f)
                         )
                         SummaryMetricTile(
-                            label = "A & B Tasks",
+                            label = "Priority Tasks",
                             value = "${dailyLog.abCompletedCount} done",
                             modifier = Modifier.weight(1f)
                         )
@@ -184,7 +182,7 @@ fun EndOfDaySummaryOverlay(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         SummaryMetricTile(
-                            label = "Check-Ins",
+                            label = "3-Hour Audits",
                             value = "+${dailyLog.checkInPoints} pts",
                             modifier = Modifier.weight(1f)
                         )
@@ -196,31 +194,49 @@ fun EndOfDaySummaryOverlay(
                     }
                 }
 
-                // Full-Pill 56dp Bottom CTA
-                Button(
-                    onClick = onCloseDay,
-                    enabled = !isBusy,
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .testTag("close_day_button")
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (isBusy) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(22.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
+                    TextButton(
+                        onClick = onOpenScoreReport,
+                        modifier = Modifier
+                            .height(44.dp)
+                            .testTag("eod_view_score_report_button")
+                    ) {
                         Text(
-                            text = "Close Day",
-                            style = MaterialTheme.typography.labelLarge
+                            text = stringResource(R.string.view_calculation_report),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+
+                    // Full-Pill 56dp Bottom CTA
+                    Button(
+                        onClick = onCloseDay,
+                        enabled = !isBusy,
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .testTag("close_day_button")
+                    ) {
+                        if (isBusy) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(22.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Close Day",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
                     }
                 }
             }
@@ -260,7 +276,7 @@ private fun SummaryMetricTile(
 
 /**
  * Screen 9: Android Lock-Screen & Notifications Center — Faithfully mirrors all 4 stacked cards
- * and lets the user grant POST_NOTIFICATIONS & dispatch real Android system notifications.
+ * and lets the user grant POST_NOTIFICATIONS & dispatch real live Android chronometer/audit notifications.
  */
 @Composable
 fun LockScreenNotificationsScreen(
@@ -269,7 +285,8 @@ fun LockScreenNotificationsScreen(
     onAnswerAudit: () -> Unit,
     onOpenTimer: () -> Unit,
     onFinishBlock: () -> Unit,
-    onStartDay: () -> Unit
+    onStartDay: () -> Unit,
+    onNotificationPermissionGranted: () -> Unit
 ) {
     BackHandler(onBack = onBack)
 
@@ -284,21 +301,21 @@ fun LockScreenNotificationsScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         permissionGranted = granted
-        dispatchStatus = if (granted) {
-            "Android notifications enabled."
+        if (granted) {
+            onNotificationPermissionGranted()
+            dispatchStatus = "Android notifications enabled."
         } else {
-            "Notification permission denied. Preview cards remain interactive below."
+            dispatchStatus = "Notification permission denied. Preview cards remain interactive below."
         }
     }
 
-    val activeNodeSpec = DailySevenPointCatalog.forNode(state.dailyLog.activeNodeIndex())
     val previewTask = state.activeBlock?.task ?: state.displayTasks.firstOrNull()
-    val blockRemaining = state.activeBlock?.let { formatMmSs(it.remainingSeconds) } ?: "28:44"
+    val blockRemaining = state.activeBlock?.let { formatMmSs(it.remainingSeconds) } ?: "45:00"
     val blockProgress = state.activeBlock?.progressFraction ?: 0.36f
     val silenceRemaining = if (state.silenceRemainingSeconds in 1..120) {
         formatMmSs(state.silenceRemainingSeconds)
     } else {
-        "01:48"
+        "02:01"
     }
 
     val infiniteTransition = rememberInfiniteTransition(label = "notif_call_pulse")
@@ -418,7 +435,7 @@ fun LockScreenNotificationsScreen(
                                 modifier = Modifier.testTag("grant_notification_permission_button")
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
@@ -438,9 +455,18 @@ fun LockScreenNotificationsScreen(
                         } else {
                             Surface(
                                 onClick = {
-                                    val posted = TurboNotificationManager.postAuditNotification(
-                                        context,
-                                        activeNodeSpec.shortTitle
+                                    val now = System.currentTimeMillis()
+                                    val posted = TurboNotificationManager.postAuditNotification(context)
+                                    TurboNotificationManager.postActiveBlockNotification(
+                                        context = context,
+                                        tierTitle = previewTask?.sectionTitle ?: "Most Critical",
+                                        taskTitle = previewTask?.task?.title ?: "Active Focus Block",
+                                        endEpochMillis = state.activeBlock?.endEpochMillis ?: (now + 45L * 60L * 1000L),
+                                        progressPercent = (blockProgress * 100f).toInt()
+                                    )
+                                    TurboNotificationManager.postSilenceResetNotification(
+                                        context = context,
+                                        endEpochMillis = if (state.silenceEndEpochMillis > now) state.silenceEndEpochMillis else (now + 121_000L)
                                     )
                                     TurboNotificationManager.postWakeUpNotification(context)
                                     dispatchStatus = if (posted) {
@@ -454,7 +480,7 @@ fun LockScreenNotificationsScreen(
                                 modifier = Modifier.testTag("send_live_notifications_button")
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
@@ -465,7 +491,7 @@ fun LockScreenNotificationsScreen(
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Text(
-                                        text = "Send Live OS Notifications",
+                                        text = "Test Live OS Notifications",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
@@ -538,12 +564,12 @@ fun LockScreenNotificationsScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = activeNodeSpec.shortTitle,
+                                    text = "3-Hour Accountability Check-In",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "3-hour checkpoint • Auto-logs time block",
+                                    text = "Automatic every 3 hours • 3 required questions (+5 pts)",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -572,7 +598,7 @@ fun LockScreenNotificationsScreen(
                 }
             }
 
-            // 2. Active Time Block — Ongoing Silent Card
+            // 2. Active Time Block — Ongoing Live Chronometer Card
             item(key = "notif_active_block_card") {
                 Surface(
                     shape = RoundedCornerShape(24.dp),
@@ -590,22 +616,15 @@ fun LockScreenNotificationsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
+                            Column(
                                 modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
-                                Surface(
-                                    shape = CircleShape,
+                                Text(
+                                    text = previewTask?.sectionTitle ?: "Most Critical",
+                                    style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary
-                                ) {
-                                    Text(
-                                        text = previewTask?.badge ?: "S-1",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    )
-                                }
+                                )
                                 Text(
                                     text = previewTask?.task?.title ?: "No active time block selected",
                                     style = MaterialTheme.typography.bodyMedium,
@@ -614,7 +633,7 @@ fun LockScreenNotificationsScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = blockRemaining,
                                 style = MaterialTheme.typography.titleMedium,
@@ -728,7 +747,7 @@ fun LockScreenNotificationsScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Tap once to start Time 1 Check-In & 3-hour audit engine",
+                                text = "Tap once to start your day and arm the 3-hour audit schedule",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

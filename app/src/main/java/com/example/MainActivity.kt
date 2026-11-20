@@ -42,6 +42,7 @@ import com.example.ui.screens.EndOfDaySummaryOverlay
 import com.example.ui.screens.IncomingCallAuditScreen
 import com.example.ui.screens.LockScreenNotificationsScreen
 import com.example.ui.screens.PostBlockEvaluationScreen
+import com.example.ui.screens.ScoreCalculationReportModal
 import com.example.ui.screens.SevenPointCheckInScreen
 import com.example.ui.screens.SilenceResetScreen
 import com.example.ui.screens.StartTimeBlockSheetOverlay
@@ -93,27 +94,41 @@ private fun TurboRootApp(
     onNavActionConsumed: () -> Unit
 ) {
     var currentUser by remember { mutableStateOf(Firebase.auth.currentUser) }
+    var isTestMode by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             currentUser = auth.currentUser
+            if (auth.currentUser != null) {
+                isTestMode = false
+            }
         }
         Firebase.auth.addAuthStateListener(listener)
         onDispose { Firebase.auth.removeAuthStateListener(listener) }
     }
 
-    if (currentUser == null) {
+    if (currentUser == null && !isTestMode) {
         AuthScreen(
-            onAuthSuccess = { currentUser = Firebase.auth.currentUser }
+            onAuthSuccess = {
+                isTestMode = false
+                currentUser = Firebase.auth.currentUser
+            },
+            onEnterTestMode = {
+                isTestMode = true
+            }
         )
     } else {
-        val uid = currentUser!!.uid
-        key(uid) {
+        val sessionKey = if (isTestMode) "local_test_mode" else currentUser!!.uid
+        key(sessionKey) {
             AuthenticatedTurboApp(
-                currentUserId = uid,
+                sessionKey = sessionKey,
+                isTestMode = isTestMode,
                 pendingNavActionFlow = pendingNavActionFlow,
                 onNavActionConsumed = onNavActionConsumed,
-                onSignedOut = { currentUser = null }
+                onSignedOut = {
+                    isTestMode = false
+                    currentUser = null
+                }
             )
         }
     }
@@ -121,7 +136,8 @@ private fun TurboRootApp(
 
 @Composable
 private fun AuthenticatedTurboApp(
-    currentUserId: String,
+    sessionKey: String,
+    isTestMode: Boolean,
     pendingNavActionFlow: MutableStateFlow<String?>,
     onNavActionConsumed: () -> Unit,
     onSignedOut: () -> Unit
@@ -132,8 +148,8 @@ private fun AuthenticatedTurboApp(
     val app = context.applicationContext as Application
 
     val viewModel: TurboModeViewModel = viewModel(
-        key = currentUserId,
-        factory = remember(app) { TurboModeViewModel.Factory(app) }
+        key = sessionKey,
+        factory = remember(app, isTestMode) { TurboModeViewModel.Factory(app, isTestMode) }
     )
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pendingNavAction by pendingNavActionFlow.collectAsStateWithLifecycle()
@@ -169,12 +185,17 @@ private fun AuthenticatedTurboApp(
                     onToggleDayState = viewModel::onDayStateToggleClicked,
                     onOpenNotifications = viewModel::openNotificationsCenter,
                     onSignOut = {
-                        signOutUser(
-                            credentialManager = credentialManager,
-                            scope = scope,
-                            onSignOutComplete = onSignedOut
-                        )
+                        if (isTestMode) {
+                            onSignedOut()
+                        } else {
+                            signOutUser(
+                                credentialManager = credentialManager,
+                                scope = scope,
+                                onSignOutComplete = onSignedOut
+                            )
+                        }
                     },
+                    onOpenScoreReport = { viewModel.setScoreReportVisible(true) },
                     onOpenAddTask = { viewModel.setAddTaskDialogVisible(true) },
                     onDismissAddTask = { viewModel.setAddTaskDialogVisible(false) },
                     onSaveTask = viewModel::addTask,
@@ -182,8 +203,8 @@ private fun AuthenticatedTurboApp(
                     onDeleteTask = viewModel::deleteTask,
                     onTaskClickedForBlock = { taskId -> viewModel.openStartBlockSheet(taskId) },
                     onStartBlockClicked = { viewModel.openStartBlockSheet(null) },
-                    onTriggerAuditNode = { node -> viewModel.triggerIncomingAuditCall(node) },
-                    onSeedSampleDay = viewModel::seedSampleDay
+                    onSeedSampleDay = viewModel::seedSampleDay,
+                    onNotificationPermissionGranted = viewModel::repostActiveNotificationsIfNeeded
                 )
 
                 if (state.destination == TurboDestination.StartBlockSheet) {
@@ -204,7 +225,17 @@ private fun AuthenticatedTurboApp(
                         dailyLog = state.dailyLog,
                         isBusy = state.isBusy,
                         onDismiss = viewModel::dismissEndOfDaySummary,
+                        onOpenScoreReport = { viewModel.setScoreReportVisible(true) },
                         onCloseDay = viewModel::closeDay
+                    )
+                }
+
+                if (state.showScoreReport) {
+                    ScoreCalculationReportModal(
+                        dailyLog = state.dailyLog,
+                        timeBlocks = state.todayTimeBlocks,
+                        checkIns = state.todayCheckIns,
+                        onDismiss = { viewModel.setScoreReportVisible(false) }
                     )
                 }
             }
@@ -249,7 +280,6 @@ private fun AuthenticatedTurboApp(
 
             TurboDestination.IncomingCallAudit -> {
                 IncomingCallAuditScreen(
-                    nodeIndex = state.pendingAuditNodeIndex,
                     onAnswer = viewModel::answerAuditCall
                 )
             }
@@ -286,7 +316,8 @@ private fun AuthenticatedTurboApp(
                     },
                     onStartDay = {
                         viewModel.handleNotificationAction(TurboNotificationManager.ACTION_START_DAY)
-                    }
+                    },
+                    onNotificationPermissionGranted = viewModel::repostActiveNotificationsIfNeeded
                 )
             }
         }

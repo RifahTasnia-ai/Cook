@@ -36,10 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.data.formatMmSs
 import com.example.ui.theme.LocalTurboColors
-import com.example.ui.theme.TurboMonoMedium
 import com.example.viewmodel.ActiveBlockSession
 import com.example.viewmodel.EvaluationDraft
-import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -86,7 +84,7 @@ fun ActiveTimeBlockScreen(
                         color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
-                            text = session.task.badge,
+                            text = session.task.sectionTitle,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
@@ -164,7 +162,7 @@ fun ActiveTimeBlockScreen(
 }
 
 /**
- * Screen 4: Post-Block Self-Evaluation — Non-dismissible elevated modal card with live formula math.
+ * Screen 4: Post-Block Self-Evaluation — Unbiased non-dismissible elevated modal card (no score preview box).
  */
 @Composable
 fun PostBlockEvaluationScreen(
@@ -179,8 +177,6 @@ fun PostBlockEvaluationScreen(
     BackHandler(enabled = true) { /* Must submit evaluation */ }
 
     val turboColors = LocalTurboColors.current
-    val formattedPoints = String.format(Locale.US, "+%.1f pts", draft.earnedPoints)
-    val multiplierText = draft.task.multiplierLabel
 
     Box(
         modifier = Modifier
@@ -212,7 +208,7 @@ fun PostBlockEvaluationScreen(
                         color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
-                            text = "${draft.task.badge} • ${draft.loggedMinutes}m logged",
+                            text = "${draft.task.sectionTitle} • ${draft.loggedMinutes}m logged",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
@@ -223,41 +219,6 @@ fun PostBlockEvaluationScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                }
-
-                // Oversized Live Score Preview Banner
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = turboColors.recessedSurface,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = "Earned Block Score",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = "Raw ${draft.rawScore}/35 × $multiplierText",
-                                style = TurboMonoMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.testTag("eval_formula_sub")
-                            )
-                        }
-                        Text(
-                            text = formattedPoints,
-                            style = MaterialTheme.typography.displaySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.testTag("eval_formula_total")
-                        )
-                    }
                 }
 
                 // Quality Rate (1-10)

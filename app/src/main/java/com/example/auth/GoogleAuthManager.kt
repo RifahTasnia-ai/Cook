@@ -168,7 +168,8 @@ fun signOutUser(
 
 @Composable
 fun AuthScreen(
-    onAuthSuccess: () -> Unit
+    onAuthSuccess: () -> Unit,
+    onEnterTestMode: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -262,7 +263,7 @@ fun AuthScreen(
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -275,13 +276,13 @@ fun AuthScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "50 pts",
+                            text = "50 / 100",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Text(
-                        text = "Sign in with Google to sync your S-1 priorities, scored focus blocks, and 7-point daily audits.",
+                        text = "Enter Test Mode for instant local testing, or sign in with Google to sync your priorities, focus blocks, and 3-hour audits to the cloud.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -301,6 +302,29 @@ fun AuthScreen(
                         }
                     }
 
+                    // Primary Instant Test Mode Button
+                    Button(
+                        onClick = onEnterTestMode,
+                        enabled = !isLoading,
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = turboColors.containerFill,
+                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .testTag("test_mode_button")
+                    ) {
+                        Text(
+                            text = stringResource(R.string.enter_test_mode),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+
+                    // Secondary Google Sign-In Button for Cloud Sync
                     Button(
                         onClick = {
                             errorMessage = null
@@ -325,26 +349,26 @@ fun AuthScreen(
                         enabled = !isLoading && !isCheckingSession,
                         shape = CircleShape,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = turboColors.containerFill,
+                            containerColor = turboColors.containerFill,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            disabledContainerColor = turboColors.recessedSurface,
                             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(52.dp)
                             .testTag("google_sign_in_button")
                     ) {
                         if (isLoading || isCheckingSession) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(22.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
                                 text = stringResource(R.string.sign_in_with_google),
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }
