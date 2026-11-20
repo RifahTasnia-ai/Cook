@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Time Block</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#DCEBE6',
+        'on-primary': '#0A1412',
+        'primary-container': '#27524B',
+        'on-primary-container': '#DCEBE6',
+        'secondary': '#4D7B73',
+        'on-secondary': '#F8F9F8',
+        'secondary-container': '#27524B',
+        'on-secondary-container': '#DCEBE6',
+        'surface': '#0A1412',
+        'surface-container-lowest': '#17322E',
+        'surface-container-low': '#122724',
+        'surface-container': '#27524B',
+        'surface-container-high': '#27524B',
+        'on-surface': '#DCEBE6',
+        'on-surface-variant': '#8FB8AE',
+        'outline': '#8FB8AE',
+        'outline-variant': '#27524B',
+        'inverse-surface': '#0A1412',
+        'inverse-on-surface': '#DCEBE6',
+        'inverse-primary': '#4D7B73',
+        'success': '#4D7B73',
+        'on-success': '#F8F9F8',
+        'success-container': '#27524B',
+        'on-success-container': '#DCEBE6',
+        'warning': '#C98A4B',
+        'on-warning': '#0A1412',
+        'warning-container': '#2A2218',
+        'on-warning-container': '#C98A4B',
+        'error': '#E06C65',
+        'on-error': '#0A1412',
+        'error-container': '#3B1816',
+        'on-error-container': '#F9DADA',
+        'scrim': '#0A1412',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto bg-surface px-page-margin py-gutter-xl flex flex-col justify-between" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Minimal Top Metadata -->
+    <header class="pt-gutter-lg flex flex-col items-center gap-gutter-sm text-center">
+      <div class="flex items-center gap-gutter-sm">
+        <span data-component-id="badge-numeric" data-component-type="badge" data-component-variant="numeric" role="status" class="inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-md py-gutter-xs tabular-nums">
+          <span data-design-text-token="label-sm" class="font-label text-label-sm">S-1</span>
+        </span>
+        <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface-variant tabular-nums">Start 14:30</span>
+      </div>
+      <h1 data-design-text-token="title-md" class="font-body text-title-md text-on-surface max-w-xs">Finalize core API architecture spec</h1>
+    </header>
+
+    <!-- Large Centered Countdown Timer with Thin Progress Indicator -->
+    <main class="flex flex-col items-center justify-center gap-gutter-xl py-section">
+      <div class="flex flex-col items-center gap-gutter-lg w-full max-w-xs">
+        <time data-component-id="typography-display" data-component-type="typography" data-component-variant="display" data-design-text-token="display-lg-mobile" class="font-display text-display-lg-mobile text-on-surface tabular-nums tracking-tight">42:18</time>
+
+        <div class="w-full h-1 rounded-full bg-surface-container overflow-hidden" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100" aria-label="Block progress">
+          <div class="h-1 rounded-full bg-secondary" style="width: 6%;"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Single Deliberate Bottom Control -->
+    <footer class="pb-gutter-lg">
+      <button data-component-id="button-primary" data-component-type="button" data-component-variant="primary" type="button" class="w-full inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-xl py-gutter-md font-label text-label-lg transition-colors duration-state-change ease-state-change hover:bg-on-primary-container active:scale-[0.99]">
+        <span data-design-text-token="label-lg">Finish Block</span>
+      </button>
+    </footer>
+  </div>
+
+
+</body></html>

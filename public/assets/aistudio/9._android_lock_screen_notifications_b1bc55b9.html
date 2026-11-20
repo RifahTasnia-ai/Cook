@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android Lock-Screen &amp; Notifications</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#DCEBE6',
+        'on-primary': '#0A1412',
+        'primary-container': '#27524B',
+        'on-primary-container': '#DCEBE6',
+        'secondary': '#4D7B73',
+        'on-secondary': '#F8F9F8',
+        'secondary-container': '#27524B',
+        'on-secondary-container': '#DCEBE6',
+        'surface': '#0A1412',
+        'surface-container-lowest': '#17322E',
+        'surface-container-low': '#122724',
+        'surface-container': '#27524B',
+        'surface-container-high': '#27524B',
+        'on-surface': '#DCEBE6',
+        'on-surface-variant': '#8FB8AE',
+        'outline': '#8FB8AE',
+        'outline-variant': '#27524B',
+        'inverse-surface': '#0A1412',
+        'inverse-on-surface': '#DCEBE6',
+        'inverse-primary': '#4D7B73',
+        'success': '#4D7B73',
+        'on-success': '#F8F9F8',
+        'success-container': '#27524B',
+        'on-success-container': '#DCEBE6',
+        'warning': '#C98A4B',
+        'on-warning': '#0A1412',
+        'warning-container': '#2A2218',
+        'on-warning-container': '#C98A4B',
+        'error': '#E06C65',
+        'on-error': '#0A1412',
+        'error-container': '#3B1816',
+        'on-error-container': '#F9DADA',
+        'scrim': '#0A1412',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto bg-surface px-gutter-xl py-gutter-xl flex flex-col gap-gutter-xl" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Minimal Android Lock-Screen Clock & Date Header -->
+    <header class="pt-gutter-md pb-gutter-xs flex flex-col items-center text-center gap-gutter-xs">
+      <div class="w-full flex items-center justify-between text-on-surface-variant pb-gutter-md">
+        <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">16:00</span>
+        <div class="flex items-center gap-gutter-xs">
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">signal_cellular_alt</span>
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">wifi</span>
+          <span class="material-symbols-outlined text-[16px]" aria-hidden="true">battery_full</span>
+        </div>
+      </div>
+      <time data-design-text-token="display-lg-mobile" class="font-display text-display-lg-mobile text-on-surface tabular-nums">16:00</time>
+      <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">Thu, Nov 20 • Turbo Mode Active</p>
+    </header>
+
+    <!-- 4 Stacked Android Notification Cards (12pt gap) -->
+    <main class="flex flex-col gap-gutter-md">
+      <!-- 1. 3-Hour Turbo Audit — Call-Style Heads-Up Card (Top Priority) -->
+      <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+        <div class="flex items-start gap-gutter-md">
+          <div class="relative flex items-center justify-center w-11 h-11 shrink-0" aria-hidden="true">
+            <div class="absolute inset-0 rounded-full border border-secondary/50 animate-ping"></div>
+            <div class="w-10 h-10 rounded-full border-2 border-secondary flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px] text-secondary">call</span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-gutter-xs min-w-0 flex-1">
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant uppercase tracking-wider">Incoming Turbo Audit</span>
+            <h2 data-design-text-token="title-md" class="font-body text-title-md text-on-surface">Time 3 — Judgment &amp; Priming</h2>
+            <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">3-hour checkpoint • Auto-logs time block</p>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button data-component-id="button-primary" data-component-type="button" data-component-variant="primary" type="button" class="h-11 inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-lg font-label text-label-md transition-colors duration-state-change ease-state-change hover:bg-on-surface">
+            <span data-design-text-token="label-md">Answer Audit</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- 2. Active Time Block — Ongoing Silent Card -->
+      <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+        <div class="flex items-center justify-between gap-gutter-sm">
+          <div class="flex items-center gap-gutter-sm min-w-0 flex-1">
+            <span class="inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">S-1</span>
+            <h2 data-design-text-token="body-md" class="font-body text-body-md text-on-surface text-balance min-w-0">Finalize core API architecture spec</h2>
+          </div>
+          <time data-design-text-token="title-md" class="font-body text-title-md text-on-surface tabular-nums shrink-0">28:44</time>
+        </div>
+
+        <div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden" role="progressbar" aria-valuenow="36" aria-valuemin="0" aria-valuemax="100" aria-label="Active block progress">
+          <div class="h-1.5 rounded-full bg-secondary" style="width: 36%;"></div>
+        </div>
+
+        <div class="flex items-center justify-end gap-gutter-lg">
+          <button type="button" class="font-label text-label-md text-on-surface-variant hover:text-on-surface transition-colors duration-state-change ease-state-change">
+            <span data-design-text-token="label-md">Open Timer</span>
+          </button>
+          <button type="button" class="font-label text-label-md text-on-surface-variant hover:text-on-surface transition-colors duration-state-change ease-state-change">
+            <span data-design-text-token="label-md">Finish Block</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- 3. 121-Second Silence Reset — Lock-Screen Stillness Card (Zero buttons) -->
+      <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex items-center justify-between gap-gutter-md">
+        <div class="flex flex-col gap-gutter-xs min-w-0">
+          <h2 data-design-text-token="title-md" class="font-body text-title-md text-on-surface">121s Silence Reset</h2>
+          <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">No phone or electronics • Alone in silence</p>
+        </div>
+        <time data-design-text-token="headline-md" class="font-headline text-headline-md text-on-surface-variant tabular-nums shrink-0">01:48</time>
+      </article>
+
+      <!-- 4. Automatic Wake-Up Task — Morning Trigger Card -->
+      <article class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+        <div class="flex flex-col gap-gutter-xs">
+          <h2 data-design-text-token="title-md" class="font-body text-title-md text-on-surface">Turbo Mode • Wake-Up Task</h2>
+          <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">Tap once to start Time 1 Check-In &amp; 3-hour audit engine</p>
+        </div>
+        <div class="flex justify-end">
+          <button data-component-id="button-primary" data-component-type="button" data-component-variant="primary" type="button" class="h-11 inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-lg font-label text-label-md transition-colors duration-state-change ease-state-change hover:bg-on-surface">
+            <span data-design-text-token="label-md">Start Day</span>
+          </button>
+        </div>
+      </article>
+    </main>
+  </div>
+
+
+</body></html>

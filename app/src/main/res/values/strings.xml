@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Turbo Mode</string>
+    <string name="auth_subtitle">Deliberate execution, weighted scoring, and 3-hour reflection audits synced to your account.</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_out_cd">Sign out</string>
+    <string name="notifications_center_cd">Notifications and lock-screen preview</string>
+    <string name="add_task_cd">Add priority task</string>
+    <string name="close_cd">Close</string>
+    <string name="start_turbo_time_block">Start Turbo Time Block</string>
+    <string name="priority_queue">Priority Queue</string>
+    <string name="active_vs_laziness_mark">Active vs. Laziness Mark</string>
+    <string name="active_zone">Active Zone</string>
+    <string name="laziness_zone">Laziness Zone</string>
+    <string name="wake_up">Wake-Up</string>
+    <string name="sleep">Sleep</string>
+</resources>

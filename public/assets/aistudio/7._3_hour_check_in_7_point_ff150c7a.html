@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3-Hour Check-In &amp; Daily 7-Point Questionnaire</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#DCEBE6',
+        'on-primary': '#0A1412',
+        'primary-container': '#27524B',
+        'on-primary-container': '#DCEBE6',
+        'secondary': '#4D7B73',
+        'on-secondary': '#F8F9F8',
+        'secondary-container': '#27524B',
+        'on-secondary-container': '#DCEBE6',
+        'surface': '#0A1412',
+        'surface-container-lowest': '#17322E',
+        'surface-container-low': '#122724',
+        'surface-container': '#27524B',
+        'surface-container-high': '#27524B',
+        'on-surface': '#DCEBE6',
+        'on-surface-variant': '#8FB8AE',
+        'outline': '#8FB8AE',
+        'outline-variant': '#27524B',
+        'inverse-surface': '#0A1412',
+        'inverse-on-surface': '#DCEBE6',
+        'inverse-primary': '#4D7B73',
+        'success': '#4D7B73',
+        'on-success': '#F8F9F8',
+        'success-container': '#27524B',
+        'on-success-container': '#DCEBE6',
+        'warning': '#C98A4B',
+        'on-warning': '#0A1412',
+        'warning-container': '#2A2218',
+        'on-warning-container': '#C98A4B',
+        'error': '#E06C65',
+        'on-error': '#0A1412',
+        'error-container': '#3B1816',
+        'on-error-container': '#F9DADA',
+        'scrim': '#0A1412',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto relative bg-surface px-gutter-xl py-gutter-xl flex flex-col justify-between" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Frosted-Blur Backdrop -->
+    <div class="absolute inset-0 bg-scrim/75 backdrop-blur-md" aria-hidden="true"></div>
+
+    <!-- Slim Floating Live Status Pill at Top (#27524B) -->
+    <header class="relative z-10 flex justify-center pt-gutter-sm">
+      <div class="inline-flex items-center gap-gutter-sm rounded-full bg-surface-container text-on-surface px-gutter-lg py-gutter-sm shadow-md">
+        <span data-component-id="badge-dot" data-component-type="badge" data-component-variant="dot" role="status" aria-label="Recording active" class="inline-block w-2 h-2 rounded-full bg-secondary shrink-0"></span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">
+          Recording Block • 16:00 • 01:24
+        </span>
+      </div>
+    </header>
+
+    <!-- Conversational Card-Stack Reflection Sheet -->
+    <main class="relative z-10 my-auto py-gutter-xl">
+      <div class="relative">
+        <!-- Subtle Stacked-Card Depth Peeking Underneath (#122724) -->
+        <div class="absolute -bottom-3 inset-x-4 h-6 rounded-b-xl bg-surface-container-low shadow-md" aria-hidden="true"></div>
+
+        <!-- Active Focused Prompt Card (#17322E with 1px #27524B hairline) -->
+        <section role="dialog" aria-modal="true" aria-labelledby="prompt-heading" class="relative rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-xl shadow-2xl flex flex-col gap-gutter-xl min-h-[420px] justify-between">
+          <!-- 4-Step Progress Pill Bar -->
+          <div class="flex flex-col gap-gutter-md">
+            <div class="grid grid-cols-4 gap-gutter-xs" aria-label="Reflection progress">
+              <div class="h-1.5 rounded-full bg-secondary" data-step-bar="0"></div>
+              <div class="h-1.5 rounded-full bg-secondary" data-step-bar="1"></div>
+              <div class="h-1.5 rounded-full bg-secondary" data-step-bar="2"></div>
+              <div class="h-1.5 rounded-full bg-secondary" data-step-bar="3"></div>
+            </div>
+            <div class="flex items-center justify-between gap-gutter-sm">
+              <span id="step-eyebrow" data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Step 4 of 4 • Daily 7-Point</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums">+5 pts</span>
+            </div>
+          </div>
+
+          <!-- Single Editorial Prompt + Completely Borderless Writing Canvas -->
+          <div class="flex flex-col gap-gutter-lg flex-1">
+            <h1 id="prompt-heading" data-design-text-token="headline-md" class="font-headline text-headline-md text-on-surface text-balance">
+              Time 3 — Judgment &amp; Priming: Is something superfluous to the matter at hand influencing my judgment right now—and if so, how do I adjust my perception accordingly?
+            </h1>
+
+            <textarea id="reflection-canvas" rows="6" aria-label="Reflection writing canvas" placeholder="Begin writing freely..." class="w-full flex-1 border-0 bg-transparent p-0 focus:ring-0 focus:outline-none resize-none font-body text-body-lg text-on-surface placeholder:text-on-surface-variant/60"></textarea>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Bottom Floating Pill Controls -->
+    <footer class="relative z-10 flex items-center gap-gutter-md pb-gutter-sm">
+      <button id="prev-step-btn" type="button" aria-label="Previous prompt" class="w-12 h-12 rounded-full bg-surface-container-lowest text-on-surface shadow-md flex items-center justify-center shrink-0 transition-colors duration-state-change ease-state-change hover:bg-surface-container-low">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </button>
+
+      <button id="next-step-btn" data-component-id="button-primary" data-component-type="button" data-component-variant="primary" type="button" class="flex-1 h-14 inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-xl shadow-lg font-label text-label-lg transition-colors duration-state-change ease-state-change hover:bg-on-primary-container active:scale-[0.99]">
+        <span id="next-step-label" data-design-text-token="label-lg">Submit &amp; Log (+5 pts)</span>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    const prompts = [
+      {
+        eyebrow: 'Step 1 of 4 • Creative IQ',
+        text: 'A. Did you use Creative IQ?'
+      },
+      {
+        eyebrow: 'Step 2 of 4 • Emotion EQ',
+        text: 'B. What Emotion EQ?'
+      },
+      {
+        eyebrow: 'Step 3 of 4 • Best Thinking',
+        text: 'C. What is your best Thinking?'
+      },
+      {
+        eyebrow: 'Step 4 of 4 • Daily 7-Point',
+        text: 'Time 3 — Judgment & Priming: Is something superfluous to the matter at hand influencing my judgment right now—and if so, how do I adjust my perception accordingly?'
+      }
+    ];
+    let current = 3;
+    const answers = ['', '', '', ''];
+    const eyebrowEl = document.getElementById('step-eyebrow');
+    const headingEl = document.getElementById('prompt-heading');
+    const canvasEl = document.getElementById('reflection-canvas');
+    const nextLabel = document.getElementById('next-step-label');
+    const bars = document.querySelectorAll('[data-step-bar]');
+
+    function renderStep() {
+      eyebrowEl.textContent = prompts[current].eyebrow;
+      headingEl.textContent = prompts[current].text;
+      canvasEl.value = answers[current];
+      nextLabel.textContent = current === 3 ? 'Submit & Log (+5 pts)' : 'Next Prompt';
+      bars.forEach((bar, idx) => {
+        bar.classList.toggle('bg-primary', idx <= current);
+        bar.classList.toggle('bg-surface-container', idx > current);
+      });
+    }
+
+    canvasEl.addEventListener('input', () => { answers[current] = canvasEl.value; });
+    document.getElementById('prev-step-btn').addEventListener('click', () => {
+      if (current > 0) { current--; renderStep(); }
+    });
+    document.getElementById('next-step-btn').addEventListener('click', () => {
+      if (current < 3) { current++; renderStep(); }
+    });
+  </script>
+
+
+</body></html>

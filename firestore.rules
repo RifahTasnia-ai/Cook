@@ -1,0 +1,152 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidTier(tier) {
+      return tier is string && tier in ['S', 'A', 'B', 'C', 'D', 'E'];
+    }
+
+    function isValidTask(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 160 &&
+             isValidTier(data.tier) &&
+             data.orderIndex is int && data.orderIndex >= 0 && data.orderIndex <= 10000 &&
+             data.completed is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidDailyLog(data, userId, dateKey) {
+      return data.userId is string && data.userId == userId &&
+             data.dateKey is string && data.dateKey == dateKey && data.dateKey.size() == 10 &&
+             data.dayState is string && data.dayState in ['WAKE_UP', 'SLEEP'] &&
+             data.totalScore is number && data.totalScore >= 0 && data.totalScore <= 5000 &&
+             data.s1CompletedCount is int && data.s1CompletedCount >= 0 && data.s1CompletedCount <= 100 &&
+             data.abCompletedCount is int && data.abCompletedCount >= 0 && data.abCompletedCount <= 500 &&
+             data.checkInPoints is int && data.checkInPoints >= 0 && data.checkInPoints <= 1000 &&
+             data.trackedMinutes is int && data.trackedMinutes >= 0 && data.trackedMinutes <= 1440 &&
+             data.completedNodes is list && data.completedNodes.size() <= 7 &&
+             (data.completedNodes.size() == 0 || data.completedNodes[0] is int) &&
+             data.nextAuditEpochMillis is int && data.nextAuditEpochMillis >= 0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidTimeBlock(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.dateKey is string && data.dateKey.size() == 10 &&
+             data.taskId is string && data.taskId.size() >= 1 && data.taskId.size() <= 128 &&
+             data.taskBadge is string && data.taskBadge.size() >= 1 && data.taskBadge.size() <= 12 &&
+             data.taskTitle is string && data.taskTitle.size() >= 1 && data.taskTitle.size() <= 160 &&
+             isValidTier(data.tier) &&
+             data.startTimeLabel is string && data.startTimeLabel.size() >= 1 && data.startTimeLabel.size() <= 16 &&
+             data.durationMinutes is int && data.durationMinutes >= 1 && data.durationMinutes <= 480 &&
+             data.qualityRate is int && data.qualityRate >= 1 && data.qualityRate <= 10 &&
+             data.finishingRate is int && data.finishingRate >= 1 && data.finishingRate <= 5 &&
+             data.actionRate is int && data.actionRate >= 1 && data.actionRate <= 20 &&
+             data.multiplier is number && data.multiplier >= 0 && data.multiplier <= 2.0 &&
+             data.earnedPoints is number && data.earnedPoints >= 0 && data.earnedPoints <= 200.0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidCheckIn(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.dateKey is string && data.dateKey.size() == 10 &&
+             data.nodeIndex is int && data.nodeIndex >= 1 && data.nodeIndex <= 7 &&
+             data.creativeIq is string && data.creativeIq.size() <= 2000 &&
+             data.emotionEq is string && data.emotionEq.size() <= 2000 &&
+             data.bestThinking is string && data.bestThinking.size() <= 2000 &&
+             data.dailySevenPoint is string && data.dailySevenPoint.size() <= 2000 &&
+             data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 10800 &&
+             data.pointsAwarded is int && data.pointsAwarded >= 0 && data.pointsAwarded <= 20 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow read, write: if false;
+
+      match /tasks/{taskId} {
+        allow get: if isOwner(userId) && isValidId(taskId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                         isValidId(taskId) &&
+                         incoming().keys().hasAll(['userId', 'title', 'tier', 'orderIndex', 'completed', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'tier', 'orderIndex', 'completed', 'createdAt', 'updatedAt']) &&
+                         isValidTask(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(taskId) &&
+                         isValidTask(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'tier', 'orderIndex', 'completed', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(taskId);
+      }
+
+      match /dailyLogs/{dateKey} {
+        allow get: if isOwner(userId) && isValidId(dateKey);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                         isValidId(dateKey) &&
+                         incoming().keys().hasAll(['userId', 'dateKey', 'dayState', 'totalScore', 's1CompletedCount', 'abCompletedCount', 'checkInPoints', 'trackedMinutes', 'completedNodes', 'nextAuditEpochMillis', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'dateKey', 'dayState', 'totalScore', 's1CompletedCount', 'abCompletedCount', 'checkInPoints', 'trackedMinutes', 'completedNodes', 'nextAuditEpochMillis', 'createdAt', 'updatedAt']) &&
+                         isValidDailyLog(incoming(), userId, dateKey);
+        allow update: if isOwner(userId) &&
+                         isValidId(dateKey) &&
+                         isValidDailyLog(incoming(), userId, dateKey) &&
+                         incoming().userId == existing().userId &&
+                         incoming().dateKey == existing().dateKey &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['dayState', 'totalScore', 's1CompletedCount', 'abCompletedCount', 'checkInPoints', 'trackedMinutes', 'completedNodes', 'nextAuditEpochMillis', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(dateKey);
+      }
+
+      match /timeBlocks/{blockId} {
+        allow get: if isOwner(userId) && isValidId(blockId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                         isValidId(blockId) &&
+                         incoming().keys().hasAll(['userId', 'dateKey', 'taskId', 'taskBadge', 'taskTitle', 'tier', 'startTimeLabel', 'durationMinutes', 'qualityRate', 'finishingRate', 'actionRate', 'multiplier', 'earnedPoints', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'dateKey', 'taskId', 'taskBadge', 'taskTitle', 'tier', 'startTimeLabel', 'durationMinutes', 'qualityRate', 'finishingRate', 'actionRate', 'multiplier', 'earnedPoints', 'createdAt']) &&
+                         isValidTimeBlock(incoming(), userId);
+        allow update: if false;
+        allow delete: if isOwner(userId) && isValidId(blockId);
+      }
+
+      match /checkIns/{checkInId} {
+        allow get: if isOwner(userId) && isValidId(checkInId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                         isValidId(checkInId) &&
+                         incoming().keys().hasAll(['userId', 'dateKey', 'nodeIndex', 'creativeIq', 'emotionEq', 'bestThinking', 'dailySevenPoint', 'durationSeconds', 'pointsAwarded', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'dateKey', 'nodeIndex', 'creativeIq', 'emotionEq', 'bestThinking', 'dailySevenPoint', 'durationSeconds', 'pointsAwarded', 'createdAt']) &&
+                         isValidCheckIn(incoming(), userId);
+        allow update: if false;
+        allow delete: if isOwner(userId) && isValidId(checkInId);
+      }
+    }
+  }
+}

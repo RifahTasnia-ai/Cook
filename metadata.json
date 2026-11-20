@@ -1,0 +1,6 @@
+{
+  "name": "Turbo Mode",
+  "description": "High-precision focus execution app with tiered priorities, weighted time blocks, 121-second silence resets, and 3-hour 7-point check-ins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

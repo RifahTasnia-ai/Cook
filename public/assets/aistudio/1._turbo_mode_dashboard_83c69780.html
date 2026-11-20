@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turbo Mode Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#DCEBE6',
+        'on-primary': '#0A1412',
+        'primary-container': '#27524B',
+        'on-primary-container': '#DCEBE6',
+        'secondary': '#4D7B73',
+        'on-secondary': '#F8F9F8',
+        'secondary-container': '#27524B',
+        'on-secondary-container': '#DCEBE6',
+        'surface': '#0A1412',
+        'surface-container-lowest': '#17322E',
+        'surface-container-low': '#122724',
+        'surface-container': '#27524B',
+        'surface-container-high': '#27524B',
+        'on-surface': '#DCEBE6',
+        'on-surface-variant': '#8FB8AE',
+        'outline': '#8FB8AE',
+        'outline-variant': '#27524B',
+        'inverse-surface': '#0A1412',
+        'inverse-on-surface': '#DCEBE6',
+        'inverse-primary': '#4D7B73',
+        'success': '#4D7B73',
+        'on-success': '#F8F9F8',
+        'success-container': '#27524B',
+        'on-success-container': '#DCEBE6',
+        'warning': '#C98A4B',
+        'on-warning': '#0A1412',
+        'warning-container': '#2A2218',
+        'on-warning-container': '#C98A4B',
+        'error': '#E06C65',
+        'on-error': '#0A1412',
+        'error-container': '#3B1816',
+        'on-error-container': '#F9DADA',
+        'scrim': '#0A1412',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto bg-surface flex flex-col pb-32" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Airy Top Bar (24pt side margins) -->
+    <header class="px-gutter-xl pt-gutter-xl pb-gutter-lg flex items-center justify-between gap-gutter-md">
+      <h1 data-design-text-token="headline-lg-mobile" class="font-headline text-headline-lg-mobile text-on-surface">Turbo Mode</h1>
+      <button id="day-state-toggle" data-component-id="button-secondary" data-component-type="button" data-component-variant="secondary" type="button" class="inline-flex items-center gap-gutter-sm rounded-full bg-surface-container-lowest text-on-surface px-gutter-lg py-gutter-sm shadow-sm transition-colors duration-state-change ease-state-change hover:bg-surface-container-low">
+        <span class="w-2 h-2 rounded-full bg-success" aria-hidden="true"></span>
+        <span id="day-state-label" data-design-text-token="label-md" class="font-label text-label-md">Wake-Up</span>
+      </button>
+    </header>
+
+    <main class="px-gutter-xl flex flex-col gap-gutter-xl">
+      <!-- Hero Bento Scorecard (Elevated #17322E with subtle 1px #27524B hairline) -->
+      <section aria-label="Active vs. Laziness Mark">
+        <article data-component-id="card-elevated" data-component-type="card" data-component-variant="elevated" class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-xl shadow-sm flex flex-col gap-gutter-lg">
+          <div class="flex items-center justify-between gap-gutter-sm">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface-variant">Active vs. Laziness Mark</span>
+            <span data-component-id="badge-warning" data-component-type="badge" data-component-variant="warning" role="status" class="inline-flex items-center justify-center rounded-full bg-warning-container text-on-warning-container px-gutter-md py-gutter-xs">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm">Laziness Zone</span>
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between gap-gutter-md">
+            <div class="flex items-baseline gap-gutter-xs">
+              <span data-design-text-token="display-lg-mobile" class="font-display text-display-lg-mobile text-on-surface tabular-nums">38</span>
+              <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface-variant tabular-nums">/ 50</span>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums">12 pts to Active</span>
+          </div>
+
+          <!-- Thick Tactile Pill Progress Bar with Crisp Threshold Notch at 50 -->
+          <div class="flex flex-col gap-gutter-xs">
+            <div class="relative w-full h-3.5 rounded-full bg-surface-container overflow-visible">
+              <div class="h-3.5 rounded-full bg-warning" style="width: 51%;"></div>
+              <div class="absolute -top-1 w-0.5 h-5 rounded-full bg-on-surface" style="left: 66.7%;" aria-label="Pass mark 50"></div>
+            </div>
+            <div class="relative h-4">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums absolute left-0">0</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums absolute -translate-x-1/2" style="left: 66.7%;">50</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums absolute right-0">75</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Minimal 7-Point Cadence Strip (Borderless) -->
+      <section aria-label="Daily 7-Point Check-In" class="flex flex-col gap-gutter-md py-gutter-xs">
+        <div class="grid grid-cols-7 gap-gutter-xs" role="list" aria-label="Check-in nodes T1 to T7">
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-label text-label-sm tabular-nums">T1</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-label text-label-sm tabular-nums">T2</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container ring-2 ring-primary ring-offset-2 ring-offset-surface flex items-center justify-center font-label text-label-sm tabular-nums">T3</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center font-label text-label-sm tabular-nums">T4</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center font-label text-label-sm tabular-nums">T5</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center font-label text-label-sm tabular-nums">T6</span>
+          </div>
+          <div role="listitem" class="flex justify-center">
+            <span class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center font-label text-label-sm tabular-nums">T7</span>
+          </div>
+        </div>
+        <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant text-center tabular-nums">
+          Next 3-hour audit (Time 3) in 01:14:20
+        </p>
+      </section>
+
+      <!-- Priority Queue (Borderless Hierarchy) -->
+      <section aria-label="Priority Execution" class="flex flex-col gap-gutter-lg">
+        <div class="flex items-center justify-between gap-gutter-md">
+          <h2 data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface">Priority Queue</h2>
+          <button id="open-add-task" data-component-id="button-icon" data-component-type="button" data-component-variant="icon" type="button" aria-label="Add Task" class="w-11 h-11 rounded-full bg-surface-container text-on-surface flex items-center justify-center transition-colors duration-state-change ease-state-change hover:bg-secondary">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+          </button>
+        </div>
+
+        <!-- S-1 Hero Tactile Card (Strictly max 1) -->
+        <div class="rounded-xl bg-surface-container-lowest border border-outline-variant p-gutter-lg shadow-sm flex items-center justify-between gap-gutter-md">
+          <div class="flex items-center gap-gutter-md min-w-0">
+            <span class="inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-md py-gutter-xs font-label text-label-sm shrink-0">S-1</span>
+            <p data-design-text-token="title-md" class="font-body text-title-md text-on-surface text-balance">Finalize core API architecture spec</p>
+          </div>
+          <span class="inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-container px-gutter-sm py-gutter-xs font-label text-label-sm tabular-nums shrink-0">1.5x</span>
+        </div>
+
+        <!-- A-1 to A-3 Borderless List Rows -->
+        <div class="flex flex-col gap-gutter-xs">
+          <div class="rounded-lg px-gutter-sm py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-surface-container-low">
+            <div class="flex items-center gap-gutter-md min-w-0">
+              <span class="inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-container px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-1</span>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Review database migration script</p>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums shrink-0">1.0x</span>
+          </div>
+
+          <div class="rounded-lg px-gutter-sm py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-surface-container-low">
+            <div class="flex items-center gap-gutter-md min-w-0">
+              <span class="inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-container px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-2</span>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Draft Q4 engineering hiring rubric</p>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums shrink-0">1.0x</span>
+          </div>
+
+          <div class="rounded-lg px-gutter-sm py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-surface-container-low">
+            <div class="flex items-center gap-gutter-md min-w-0">
+              <span class="inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-container px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-3</span>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Clear blocking PR reviews</p>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums shrink-0">1.0x</span>
+          </div>
+        </div>
+
+        <!-- Single Ultra-Clean Expandable Drawer Pill for B, C, D, E -->
+        <details class="rounded-xl bg-surface-container-low">
+          <summary class="px-gutter-lg py-gutter-md flex items-center justify-between cursor-pointer list-none">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface">B, C, D &amp; E Queues (6)</span>
+            <span class="material-symbols-outlined text-[20px] text-on-surface-variant">expand_more</span>
+          </summary>
+          <div class="px-gutter-lg pb-gutter-lg flex flex-col gap-gutter-sm">
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface">B-1: Update onboarding docs</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums">0.75x</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface">B-2: Audit error log alerts</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums">0.75x</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface">C-1: Organize local workspace notes</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant tabular-nums">0.5x</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">D-1: Hand off vendor invoice follow-up</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Delegate</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant line-through">E-1: Unsubscribe low-signal newsletters</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface-variant">Eliminate</span>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <!-- Floating Bottom Pill CTA (56pt height, safe-area clearance, no box dock) -->
+    <div class="fixed bottom-6 left-0 right-0 max-w-md mx-auto px-gutter-xl pointer-events-none">
+      <button data-component-id="button-primary" data-component-type="button" data-component-variant="primary" type="button" class="pointer-events-auto w-full h-14 inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-xl shadow-lg font-label text-label-lg transition-colors duration-state-change ease-state-change hover:bg-on-primary-container active:scale-[0.99]">
+        <span data-design-text-token="label-lg">Start Turbo Time Block</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Task Modal Popup -->
+  <dialog id="add-task-dialog" data-component-id="modal-standard" data-component-type="modal" data-component-variant="standard" aria-labelledby="add-task-title" class="rounded-xl bg-surface-container-lowest text-on-surface p-gutter-xl max-w-sm w-full shadow-2xl backdrop:bg-scrim/30 backdrop:backdrop-blur-sm">
+    <header class="flex items-center justify-between gap-gutter-md mb-gutter-lg">
+      <h2 id="add-task-title" data-design-text-token="title-lg" class="font-title text-title-lg text-on-surface">Add Priority Task</h2>
+      <button id="close-add-task" type="button" aria-label="Close dialog" class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-surface-container-low text-on-surface-variant">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </header>
+    <div class="flex flex-col gap-gutter-md mb-gutter-xl">
+      <label class="flex flex-col gap-gutter-xs">
+        <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface">Task Title</span>
+        <input type="text" placeholder="Single concrete deliverable" class="rounded-lg border-0 bg-surface-container-low text-on-surface px-gutter-lg py-gutter-md font-body text-body-md">
+      </label>
+      <label class="flex flex-col gap-gutter-xs">
+        <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface">Priority Tier</span>
+        <select class="rounded-lg border-0 bg-surface-container-low text-on-surface px-gutter-lg py-gutter-md font-body text-body-md">
+          <option>A Tier (1.0x) — Must Do</option>
+          <option>B Tier (0.75x) — Should Do</option>
+          <option>C Tier (0.5x) — Nice to Do</option>
+          <option>D Tier — Delegate</option>
+          <option>E Tier — Eliminate</option>
+        </select>
+      </label>
+    </div>
+    <footer class="flex items-center justify-end gap-gutter-sm">
+      <button id="cancel-add-task" type="button" class="h-12 rounded-full bg-surface-container-low text-on-surface px-gutter-lg">
+        <span data-design-text-token="label-lg" class="font-label text-label-lg">Cancel</span>
+      </button>
+      <button id="save-add-task" type="button" class="h-12 rounded-full bg-primary text-on-primary px-gutter-xl">
+        <span data-design-text-token="label-lg" class="font-label text-label-lg">Save Task</span>
+      </button>
+    </footer>
+  </dialog>
+
+  <script>
+    const dayToggle = document.getElementById('day-state-toggle');
+    const dayLabel = document.getElementById('day-state-label');
+    dayToggle.addEventListener('click', () => {
+      dayLabel.textContent = dayLabel.textContent === 'Wake-Up' ? 'Sleep' : 'Wake-Up';
+    });
+    const addDialog = document.getElementById('add-task-dialog');
+    document.getElementById('open-add-task').addEventListener('click', () => addDialog.showModal());
+    document.getElementById('close-add-task').addEventListener('click', () => addDialog.close());
+    document.getElementById('cancel-add-task').addEventListener('click', () => addDialog.close());
+    document.getElementById('save-add-task').addEventListener('click', () => addDialog.close());
+  </script>
+
+
+</body></html>

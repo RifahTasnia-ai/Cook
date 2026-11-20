@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Time Block</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#DCEBE6',
+        'on-primary': '#0A1412',
+        'primary-container': '#27524B',
+        'on-primary-container': '#DCEBE6',
+        'secondary': '#4D7B73',
+        'on-secondary': '#F8F9F8',
+        'secondary-container': '#27524B',
+        'on-secondary-container': '#DCEBE6',
+        'surface': '#0A1412',
+        'surface-container-lowest': '#17322E',
+        'surface-container-low': '#122724',
+        'surface-container': '#27524B',
+        'surface-container-high': '#27524B',
+        'on-surface': '#DCEBE6',
+        'on-surface-variant': '#8FB8AE',
+        'outline': '#8FB8AE',
+        'outline-variant': '#27524B',
+        'inverse-surface': '#0A1412',
+        'inverse-on-surface': '#DCEBE6',
+        'inverse-primary': '#4D7B73',
+        'success': '#4D7B73',
+        'on-success': '#F8F9F8',
+        'success-container': '#27524B',
+        'on-success-container': '#DCEBE6',
+        'warning': '#C98A4B',
+        'on-warning': '#0A1412',
+        'warning-container': '#2A2218',
+        'on-warning-container': '#C98A4B',
+        'error': '#E06C65',
+        'on-error': '#0A1412',
+        'error-container': '#3B1816',
+        'on-error-container': '#F9DADA',
+        'scrim': '#0A1412',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '28px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"Albert Sans"', 'sans-serif'],
+        'headline': ['"Albert Sans"', 'sans-serif'],
+        'title': ['"Albert Sans"', 'sans-serif'],
+        'body': ['"Commissioner"', 'sans-serif'],
+        'label': ['"Commissioner"', 'sans-serif'],
+        'mono': ['"Source Code Pro"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '52px', letterSpacing: '-1px', fontWeight: '600' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg': ['36px', { lineHeight: '42px', letterSpacing: '-0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '30px', letterSpacing: '-0.25px', fontWeight: '600' }],
+        'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'title-lg': ['18px', { lineHeight: '24px', letterSpacing: '-0.1px', fontWeight: '600' }],
+        'title-md': ['15px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+        'label-lg': ['15px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '240ms',
+        'surface-exit': '160ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;700&amp;family=Commissioner:wght@400;500;600&amp;family=Source+Code+Pro:wght@500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+  <div class="min-h-[884px] max-w-md mx-auto relative bg-surface flex flex-col justify-end overflow-hidden" data-stitch-vh="min-h-[884px]===min-h-screen">
+    <!-- Subtle Dashboard Geometry Behind Frosted Backdrop -->
+    <div class="absolute inset-0 px-gutter-xl pt-gutter-xl flex flex-col gap-gutter-xl pointer-events-none select-none" aria-hidden="true">
+      <div class="flex items-center justify-between">
+        <div class="w-36 h-8 rounded-lg bg-surface-container-high"></div>
+        <div class="w-24 h-8 rounded-full bg-surface-container-lowest"></div>
+      </div>
+      <div class="h-36 rounded-xl bg-surface-container-lowest"></div>
+      <div class="h-14 rounded-xl bg-surface-container-lowest"></div>
+    </div>
+
+    <!-- Soft Frosted-Blur Backdrop -->
+    <div class="absolute inset-0 bg-scrim/75 backdrop-blur-md" aria-hidden="true"></div>
+
+    <!-- Elevated Tactile Bottom Sheet (24pt top corners, 24pt padding) -->
+    <section aria-label="Start Time Block Sheet" class="relative z-10 w-full rounded-t-xl bg-surface-container-lowest border-t border-outline-variant px-gutter-xl pt-gutter-md pb-gutter-xl shadow-2xl flex flex-col gap-gutter-xl">
+      <!-- Centered Minimal Grabber Pill -->
+      <div class="flex justify-center">
+        <div class="w-10 h-1 rounded-full bg-outline-variant" aria-hidden="true"></div>
+      </div>
+
+      <header class="flex items-center justify-between gap-gutter-md">
+        <div class="flex flex-col gap-gutter-xs">
+          <h1 data-design-text-token="headline-md" class="font-headline text-headline-md text-on-surface">Select Task to Begin</h1>
+          <p data-design-text-token="body-sm" class="font-body text-body-sm text-on-surface-variant">Bind this block to one concrete priority.</p>
+        </div>
+        <button data-component-id="button-icon" data-component-type="button" data-component-variant="icon" type="button" aria-label="Close sheet" class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-surface-container text-on-surface shrink-0">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </header>
+
+      <!-- Spacious 56pt Selectable Task Pills -->
+      <div id="task-select-list" class="flex flex-col gap-gutter-md max-h-64 overflow-y-auto" role="radiogroup" aria-label="Select task">
+        <button type="button" data-task-option class="w-full min-h-[56px] text-left rounded-lg bg-surface-container px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-secondary" role="radio" aria-checked="false">
+          <div class="flex items-center gap-gutter-md min-w-0 flex-1">
+            <span class="inline-flex items-center justify-center rounded-full bg-primary text-on-primary px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">S-1</span>
+            <span data-design-text-token="title-md" class="font-body text-title-md text-on-surface text-balance min-w-0">Finalize core API architecture spec</span>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-primary tabular-nums shrink-0">1.5x</span>
+        </button>
+
+        <button type="button" data-task-option class="w-full min-h-[56px] text-left rounded-lg bg-surface-container px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-secondary" role="radio" aria-checked="false">
+          <div class="flex items-center gap-gutter-md min-w-0 flex-1">
+            <span class="inline-flex items-center justify-center rounded-full bg-surface-container-lowest text-on-surface px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-1</span>
+            <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface min-w-0">Review database migration script</span>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums shrink-0">1.0x</span>
+        </button>
+
+        <button type="button" data-task-option class="w-full min-h-[56px] text-left rounded-lg bg-surface-container px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-secondary" role="radio" aria-checked="false">
+          <div class="flex items-center gap-gutter-md min-w-0 flex-1">
+            <span class="inline-flex items-center justify-center rounded-full bg-surface-container-lowest text-on-surface px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-2</span>
+            <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface min-w-0">Draft Q4 engineering hiring rubric</span>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums shrink-0">1.0x</span>
+        </button>
+
+        <button type="button" data-task-option class="w-full min-h-[56px] text-left rounded-lg bg-surface-container px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-secondary" role="radio" aria-checked="false">
+          <div class="flex items-center gap-gutter-md min-w-0">
+            <span class="inline-flex items-center justify-center rounded-full bg-surface-container-lowest text-on-surface px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">A-3</span>
+            <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Clear blocking PR reviews</span>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums shrink-0">1.0x</span>
+        </button>
+
+        <button type="button" data-task-option class="w-full min-h-[56px] text-left rounded-lg bg-surface-container px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-md transition-colors duration-state-change ease-state-change hover:bg-secondary" role="radio" aria-checked="false">
+          <div class="flex items-center gap-gutter-md min-w-0">
+            <span class="inline-flex items-center justify-center rounded-full bg-surface-container-lowest text-on-surface-variant px-gutter-sm py-gutter-xs font-label text-label-sm shrink-0">B-1</span>
+            <span data-design-text-token="body-md" class="font-body text-body-md text-on-surface">Update onboarding docs</span>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-on-surface tabular-nums shrink-0">0.75x</span>
+        </button>
+      </div>
+
+      <!-- Inline Start Time Pill + Horizontally Scrollable Tactile Duration Pills -->
+      <div class="flex flex-col gap-gutter-lg">
+        <div class="flex items-center justify-between gap-gutter-md">
+          <span data-design-text-token="label-md" class="font-label text-label-md text-on-surface-variant">Start Time</span>
+          <input type="time" value="14:30" aria-label="Start Time" class="rounded-full border-0 bg-surface-container px-gutter-lg py-gutter-sm font-mono text-mono-md text-on-surface tabular-nums">
+        </div>
+
+        <div class="flex items-center gap-gutter-md overflow-x-auto pb-gutter-xs" id="duration-chips">
+          <button type="button" data-dur class="h-12 px-gutter-lg rounded-full bg-surface-container text-on-surface font-label text-label-md tabular-nums shrink-0">25m</button>
+          <button type="button" data-dur class="h-12 px-gutter-lg rounded-full bg-primary text-on-primary font-label text-label-md tabular-nums shrink-0">45m</button>
+          <button type="button" data-dur class="h-12 px-gutter-lg rounded-full bg-surface-container text-on-surface font-label text-label-md tabular-nums shrink-0">60m</button>
+          <button type="button" data-dur class="h-12 px-gutter-lg rounded-full bg-surface-container text-on-surface font-label text-label-md tabular-nums shrink-0">90m</button>
+          <button type="button" data-dur class="h-12 px-gutter-lg rounded-full bg-surface-container text-on-surface font-label text-label-md shrink-0">Custom</button>
+        </div>
+      </div>
+
+      <!-- Floating 56pt Full-Pill CTA -->
+      <button id="start-block-btn" data-component-id="button-primary-disabled" data-component-type="button" data-component-variant="primary" type="button" disabled class="w-full h-14 inline-flex items-center justify-center rounded-full bg-surface-container text-on-surface px-gutter-xl font-label text-label-lg cursor-not-allowed transition-colors duration-state-change ease-state-change">
+        <span data-design-text-token="label-lg">Start Block</span>
+      </button>
+    </section>
+  </div>
+
+  <script>
+    const taskButtons = document.querySelectorAll('[data-task-option]');
+    const startBtn = document.getElementById('start-block-btn');
+    taskButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        taskButtons.forEach((b) => {
+          b.setAttribute('aria-checked', 'false');
+          b.classList.remove('bg-primary-container', 'shadow-sm');
+          b.classList.add('bg-surface-container-low');
+        });
+        btn.setAttribute('aria-checked', 'true');
+        btn.classList.remove('bg-surface-container-low');
+        btn.classList.add('bg-primary-container', 'shadow-sm');
+
+        startBtn.disabled = false;
+        startBtn.classList.remove('bg-surface-container-high', 'text-on-surface-variant', 'cursor-not-allowed');
+        startBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-lg');
+      });
+    });
+
+    const durChips = document.querySelectorAll('[data-dur]');
+    durChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        durChips.forEach((c) => {
+          c.classList.remove('bg-primary', 'text-on-primary');
+          c.classList.add('bg-surface-container-low', 'text-on-surface');
+        });
+        chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+        chip.classList.add('bg-primary', 'text-on-primary');
+      });
+    });
+  </script>
+
+
+</body></html>

@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "PriorityTask": {
+      "title": "PriorityTask",
+      "description": "A user-authored priority queue item assigned to S, A, B, C, D, or E execution tiers.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID" },
+        "title": { "type": "string", "description": "Concrete single deliverable title" },
+        "tier": { "type": "string", "enum": ["S", "A", "B", "C", "D", "E"], "description": "Priority tier determining score multiplier" },
+        "orderIndex": { "type": "integer", "description": "Display order within tier" },
+        "completed": { "type": "boolean", "description": "Whether the deliverable is completed" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "title", "tier", "orderIndex", "completed", "createdAt", "updatedAt"]
+    },
+    "DailyLog": {
+      "title": "DailyLog",
+      "description": "Daily Turbo Mode scorecard, wake/sleep state, tracked time, and 7-point check-in cadence.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID" },
+        "dateKey": { "type": "string", "description": "ISO date key YYYY-MM-DD" },
+        "dayState": { "type": "string", "enum": ["WAKE_UP", "SLEEP"], "description": "Current daily execution state" },
+        "totalScore": { "type": "number", "description": "Cumulative Active vs. Laziness Mark score" },
+        "s1CompletedCount": { "type": "integer", "description": "Completed S-1 deliverables count" },
+        "abCompletedCount": { "type": "integer", "description": "Completed A and B deliverables count" },
+        "checkInPoints": { "type": "integer", "description": "Points earned from 3-hour check-ins" },
+        "trackedMinutes": { "type": "integer", "description": "Total logged focus minutes" },
+        "completedNodes": { "type": "array", "description": "Completed Time 1..7 node indices" },
+        "nextAuditEpochMillis": { "type": "integer", "description": "Epoch millis for next 3-hour audit trigger" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "dateKey", "dayState", "totalScore", "s1CompletedCount", "abCompletedCount", "checkInPoints", "trackedMinutes", "completedNodes", "nextAuditEpochMillis", "createdAt", "updatedAt"]
+    },
+    "TimeBlockRecord": {
+      "title": "TimeBlockRecord",
+      "description": "Immutable record of a completed Turbo Time Block and its post-block self-evaluation.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID" },
+        "dateKey": { "type": "string", "description": "ISO date key YYYY-MM-DD" },
+        "taskId": { "type": "string", "description": "Associated priority task document ID" },
+        "taskBadge": { "type": "string", "description": "Tier badge label such as S-1 or A-2" },
+        "taskTitle": { "type": "string", "description": "Snapshot of task title during block" },
+        "tier": { "type": "string", "enum": ["S", "A", "B", "C", "D", "E"] },
+        "startTimeLabel": { "type": "string", "description": "Formatted block start time HH:mm" },
+        "durationMinutes": { "type": "integer", "description": "Logged duration in minutes" },
+        "qualityRate": { "type": "integer", "description": "Self-evaluated quality rate 1-10" },
+        "finishingRate": { "type": "integer", "description": "Self-evaluated finishing rate 1-5" },
+        "actionRate": { "type": "integer", "description": "Self-evaluated action rate 1-20" },
+        "multiplier": { "type": "number", "description": "Priority tier multiplier" },
+        "earnedPoints": { "type": "number", "description": "Computed weighted block score" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "dateKey", "taskId", "taskBadge", "taskTitle", "tier", "startTimeLabel", "durationMinutes", "qualityRate", "finishingRate", "actionRate", "multiplier", "earnedPoints", "createdAt"]
+    },
+    "CheckInRecord": {
+      "title": "CheckInRecord",
+      "description": "Immutable 3-hour audit reflection and Daily 7-Point questionnaire entry.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID" },
+        "dateKey": { "type": "string", "description": "ISO date key YYYY-MM-DD" },
+        "nodeIndex": { "type": "integer", "description": "Check-in slot index 1-7" },
+        "creativeIq": { "type": "string", "description": "Step 1 Creative IQ response" },
+        "emotionEq": { "type": "string", "description": "Step 2 Emotion EQ response" },
+        "bestThinking": { "type": "string", "description": "Step 3 Best Thinking response" },
+        "dailySevenPoint": { "type": "string", "description": "Step 4 Daily 7-Point reflection response" },
+        "durationSeconds": { "type": "integer", "description": "Recording duration in seconds" },
+        "pointsAwarded": { "type": "integer", "description": "Points awarded for check-in" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "dateKey", "nodeIndex", "creativeIq", "emotionEq", "bestThinking", "dailySevenPoint", "durationSeconds", "pointsAwarded", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/PriorityTask" },
+      "description": "Per-user priority queue tasks."
+    },
+    "/users/{userId}/dailyLogs/{dateKey}": {
+      "schema": { "$ref": "#/entities/DailyLog" },
+      "description": "Per-user daily Turbo Mode scorecard and audit cadence."
+    },
+    "/users/{userId}/timeBlocks/{blockId}": {
+      "schema": { "$ref": "#/entities/TimeBlockRecord" },
+      "description": "Per-user completed Turbo Time Blocks."
+    },
+    "/users/{userId}/checkIns/{checkInId}": {
+      "schema": { "$ref": "#/entities/CheckInRecord" },
+      "description": "Per-user 3-hour check-in reflections."
+    }
+  }
+}
